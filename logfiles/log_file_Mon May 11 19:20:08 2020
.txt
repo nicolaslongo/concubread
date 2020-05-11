@@ -1,8 +1,0 @@
-Welcome to my log file 
- 
-FabricaDePan: Maestro especialista creado
-FifoEscritura: fd resultado es 6
-FifoEscritura: fd resultado es 6
-FabricaDePan: estamos cerrando.
-
-This is it, fellas

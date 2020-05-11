@@ -8,15 +8,20 @@ MaestroPanadero::MaestroPanadero () : Maestro::Maestro() {
 void MaestroPanadero::abrirCanalesDeComunicacion() {
     
     try {
-        fifoEscritura = new FifoEscritura(std::string("pedidos_de_MM"));
-        fifoEscritura->abrir();
+        fifoLectura = new FifoLectura(std::string("./fifos/entregas_de_MM"));
+        fifoLectura->abrir();
+        std::string mensaje = "MaestroPanadero: abrí el fifo <entregas_de_MM>";
+        Logger::writeToLogFile(mensaje);
+
     } catch ( std::string& mensaje ) {
         std::cerr << mensaje << std::endl;
         exit(-1);
     }
     try {
-        fifoLectura = new FifoLectura(std::string("entregas_de_MM"));
-        fifoLectura->abrir();
+        fifoEscritura = new FifoEscritura(std::string("./fifos/pedidos_de_MM"));
+        fifoEscritura->abrir();
+        std::string mensaje = "MaestroPanadero: abrí el fifo <pedidos_de_MM>";
+        Logger::writeToLogFile(mensaje);
     } catch ( std::string& mensaje ) {
         std::cerr << mensaje << std::endl;
         exit(-1);
@@ -80,14 +85,6 @@ int MaestroPanadero::realizarMisTareas() {
 
 int MaestroPanadero::terminarJornada() {
     // Devuelvo 1 para que el proceso sepa que no soy la fabrica de pan
-    return CHILD_PROCESS;
-}
-
-int MaestroPanadero::empezarJornada() {
-    return CHILD_PROCESS;
-}
-
-MaestroPanadero::~MaestroPanadero() {
 
     try {
         fifoEscritura->cerrar();
@@ -104,5 +101,15 @@ MaestroPanadero::~MaestroPanadero() {
         exit(-1);
     }
     delete fifoLectura;
+
+    return CHILD_PROCESS;
+}
+
+int MaestroPanadero::empezarJornada() {
+    return CHILD_PROCESS;
+}
+
+MaestroPanadero::~MaestroPanadero() {
+
     
 }

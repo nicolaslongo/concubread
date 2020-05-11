@@ -9,6 +9,7 @@
 
 # ignore folders
 /fifos
+/logfiles
 
 # Precompiled Headers
 *.gch

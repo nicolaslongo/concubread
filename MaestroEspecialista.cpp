@@ -7,15 +7,19 @@ MaestroEspecialista::MaestroEspecialista () : Maestro::Maestro() {
 void MaestroEspecialista::abrirCanalesDeComunicacion() {
 
     try {
-        fifoEscritura = new FifoEscritura(std::string("entregas_de_MM"));
+        fifoEscritura = new FifoEscritura(std::string("./fifos/entregas_de_MM"));
         fifoEscritura->abrir();
+        std::string mensaje = "MaestroEspecialista: abrí el fifo <entregas_de_MM>";
+        Logger::writeToLogFile(mensaje);
     } catch ( std::string& mensaje ) {
         Logger::writeToLogFile(mensaje);
         exit(-1);
     }
     try {
-        fifoLectura = new FifoLectura(std::string("pedidos_de_MM"));
+        fifoLectura = new FifoLectura(std::string("./fifos/pedidos_de_MM"));
         fifoLectura->abrir();
+        std::string mensaje = "MaestroEspecialista: abrí el fifo <pedidos_de_MM>";
+        Logger::writeToLogFile(mensaje);
     } catch ( std::string& mensaje ) {
         Logger::writeToLogFile(mensaje);
         exit(-1);
@@ -75,6 +79,23 @@ int MaestroEspecialista::realizarMisTareas() {
 
 int MaestroEspecialista::terminarJornada() {
     // Devuelvo 1 para que el proceso sepa que no soy la fabrica de pan
+
+    try {
+        fifoEscritura->cerrar();
+    } catch ( std::string& mensaje ) {
+        Logger::writeToLogFile(mensaje);
+        exit(-1);
+    }
+    delete fifoEscritura;
+
+    try {
+        fifoLectura->cerrar();
+    } catch ( std::string& mensaje ) {
+        Logger::writeToLogFile(mensaje);
+        exit(-1);
+    }
+    delete fifoLectura;
+
     for(auto racion: masaMadre) {
         delete racion;       
     }
@@ -94,19 +115,4 @@ void MaestroEspecialista::alimentarMasaMadre(int numeroDeRacion){
 // TODO: se podría llevar esto al destructor de la clase padre
 MaestroEspecialista::~MaestroEspecialista() {
 
-    try {
-        fifoEscritura->cerrar();
-    } catch ( std::string& mensaje ) {
-        Logger::writeToLogFile(mensaje);
-        exit(-1);
-    }
-    delete fifoEscritura;
-
-    try {
-        fifoLectura->cerrar();
-    } catch ( std::string& mensaje ) {
-        Logger::writeToLogFile(mensaje);
-        exit(-1);
-    }
-    delete fifoLectura;
 }

@@ -16,7 +16,7 @@ int main() {
     }
 
     // espero a que trabajen
-    sleep(5);
+    sleep(10);
 
     // cierro la fabrica
     fabrica->cerrarLaFabrica();

@@ -21,6 +21,7 @@ class Logger {
         Logger();
         ~Logger();
         static void writeToLogFile(std::string msg);
+        //static void writeToLogFile(std::string& msg);
         static void closeFileInThisScope();
 };
 

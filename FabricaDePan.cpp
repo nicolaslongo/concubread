@@ -4,12 +4,14 @@ FabricaDePan:: FabricaDePan() {
 
     // creo al maestroEspecialista
     maestroEspecialista = new MaestroEspecialista();
-    std::string msg = "FabricaDePan: Maestro especialista creado";
+    std::string msg = "FabricaDePan: MaestroEspecialista creado";
     Logger::writeToLogFile(msg);
 
     // creo a los maestros panaderos
     for (int i = 0; i < 1; i++) {
         maestrosPanaderos.push_back(new MaestroPanadero());
+    std::string msg = "FabricaDePan: iésimo MaestroPanadero creado";
+    Logger::writeToLogFile(msg);
     }
 
     //creo al maestroPizzero

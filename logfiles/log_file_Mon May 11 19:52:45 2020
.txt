@@ -1,0 +1,4 @@
+Welcome to my log file 
+ 
+FabricaDePan: MaestroEspecialista creado
+FabricaDePan: iésimo MaestroPanadero creado
