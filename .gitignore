@@ -7,6 +7,9 @@
 *.o
 *.obj
 
+# ignore folders
+/fifos
+
 # Precompiled Headers
 *.gch
 *.pch
