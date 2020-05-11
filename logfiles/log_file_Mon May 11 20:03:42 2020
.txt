@@ -1,9 +1,0 @@
-Welcome to my log file 
- 
-FabricaDePan: MaestroEspecialista creado
-FabricaDePan: iésimo MaestroPanadero creado
-FifoEscritura: fd resultado es 6
-MaestroPanadero: abrí el fifo <pedidos_de_MM>
-MaestroPanadero: abrí el fifo <entregas_de_MM>
-FifoEscritura: fd resultado es 6
-Maestro Panero: Realicé mis tareas, me voy a la mierda

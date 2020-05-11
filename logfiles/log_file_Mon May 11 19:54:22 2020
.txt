@@ -1,7 +1,0 @@
-Welcome to my log file 
- 
-FabricaDePan: MaestroEspecialista creado
-FabricaDePan: iésimo MaestroPanadero creado
-FabricaDePan: estamos cerrando.
-
-This is it, fellas
