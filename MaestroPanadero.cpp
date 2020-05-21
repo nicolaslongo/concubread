@@ -79,7 +79,7 @@ int MaestroPanadero::realizarMisTareas() {
         // sería válido???
     }
     sleep(1);
-    return 0;
+    return CHILD_PROCESS;
 
 }
 

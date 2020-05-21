@@ -49,7 +49,7 @@ int MaestroEspecialista::jornadaLaboral() {
     resultado = terminarJornada();
     return resultado;
 }
-
+ 
 int MaestroEspecialista::realizarMisTareas() {
 
     // Acá va la variable que modificaremos usando SIGNALS

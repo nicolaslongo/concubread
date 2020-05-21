@@ -10,6 +10,7 @@
 # ignore folders
 /fifos
 /logfiles
+.vscode/
 
 # Precompiled Headers
 *.gch
