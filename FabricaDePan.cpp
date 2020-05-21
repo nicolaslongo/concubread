@@ -1,6 +1,9 @@
 #include "FabricaDePan.h"
 
-FabricaDePan:: FabricaDePan() {
+FabricaDePan::FabricaDePan() {
+
+    // leo los pedidos de algun lado. Los levanto
+    
 
     // creo a los recepcionistas
     for (int i = 0; i < 1; i++) {
