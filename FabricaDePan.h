@@ -1,6 +1,7 @@
 #ifndef FABRICADEPAN_H_
 #define FABRICADEPAN_H_
 
+#include "Pedido.h"
 #include "MaestroPanadero.h"
 #include "MaestroEspecialista.h"
 #include "Logger.h"
@@ -19,10 +20,10 @@ class FabricaDePan {
         // r recepcionistas
         // d deliverys
 
-
     protected:
 
     public:
+        std::vector<Pedido> pedidos;
         FabricaDePan();
         ~FabricaDePan();
         int abrirLaFabrica();

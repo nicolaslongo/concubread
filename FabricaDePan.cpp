@@ -2,6 +2,11 @@
 
 FabricaDePan:: FabricaDePan() {
 
+    // creo a los recepcionistas
+    for (int i = 0; i < 1; i++) {
+        // los creo
+    }
+    
     // creo al maestroEspecialista
     maestroEspecialista = new MaestroEspecialista();
     std::string msg = "FabricaDePan: MaestroEspecialista creado";
