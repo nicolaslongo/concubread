@@ -10,20 +10,20 @@ void MaestroPanadero::abrirCanalesDeComunicacion() {
     try {
         fifoLectura = new FifoLectura(std::string("./fifos/entregas_de_MM"));
         fifoLectura->abrir();
-        std::string mensaje = "MaestroPanadero: abrí el fifo <entregas_de_MM>";
-        Logger::writeToLogFile(mensaje);
+        // std::string mensaje = "MaestroPanadero: abrí el fifo <entregas_de_MM>";
+        // Logger::writeToLogFile(mensaje);
 
     } catch ( std::string& mensaje ) {
-        std::cerr << mensaje << std::endl;
+        // std::cerr << mensaje << std::endl;
         exit(-1);
     }
     try {
         fifoEscritura = new FifoEscritura(std::string("./fifos/pedidos_de_MM"));
         fifoEscritura->abrir();
-        std::string mensaje = "MaestroPanadero: abrí el fifo <pedidos_de_MM>";
-        Logger::writeToLogFile(mensaje);
+        // std::string mensaje = "MaestroPanadero: abrí el fifo <pedidos_de_MM>";
+        // Logger::writeToLogFile(mensaje);
     } catch ( std::string& mensaje ) {
-        std::cerr << mensaje << std::endl;
+        // std::cerr << mensaje << std::endl;
         exit(-1);
     }
 
@@ -41,8 +41,8 @@ int MaestroPanadero::jornadaLaboral() {
     abrirCanalesDeComunicacion();
     // realizar mis tareas
     int resultado = realizarMisTareas();
-    std::string msg = "Maestro Panero: Realicé mis tareas, me voy a la mierda"; 
-    Logger::writeToLogFile(msg);
+    // std::string msg = "Maestro Panero: Realicé mis tareas, me voy a la mierda"; 
+    // Logger::writeToLogFile(msg);
 
     // terminar jornada
     resultado = terminarJornada();
@@ -89,7 +89,7 @@ int MaestroPanadero::terminarJornada() {
     try {
         fifoEscritura->cerrar();
     } catch ( std::string& mensaje ) {
-        std::cerr << mensaje << std::endl;
+        // std::cerr << mensaje << std::endl;
         exit(-1);
     }
     delete fifoEscritura;
@@ -97,7 +97,7 @@ int MaestroPanadero::terminarJornada() {
     try {
         fifoLectura->cerrar();
     } catch ( std::string& mensaje ) {
-        std::cerr << mensaje << std::endl;
+        // std::cerr << mensaje << std::endl;
         exit(-1);
     }
     delete fifoLectura;

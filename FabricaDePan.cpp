@@ -1,9 +1,9 @@
 #include "FabricaDePan.h"
 
-FabricaDePan::FabricaDePan() {
+FabricaDePan::FabricaDePan(Logger* logger) {
 
     // leo los pedidos de algun lado. Los levanto
-    
+    this->logger = logger;
 
     // creo a los recepcionistas
     for (int i = 0; i < 1; i++) {
@@ -11,15 +11,19 @@ FabricaDePan::FabricaDePan() {
     }
     
     // creo al maestroEspecialista
-    maestroEspecialista = new MaestroEspecialista();
-    std::string msg = "FabricaDePan: MaestroEspecialista creado";
-    Logger::writeToLogFile(msg);
+    maestroEspecialista = new MaestroEspecialista(logger);
+    const char* msg = "FabricaDePan: MaestroEspecialista creado\n";
+    while(this->logger->lockLogger() == -1) sched_yield();
+    this->logger->writeToLogFile(msg, strlen(msg));
+    this->logger->unlockLogger();
 
     // creo a los maestros panaderos
     for (int i = 0; i < 1; i++) {
         maestrosPanaderos.push_back(new MaestroPanadero());
-    std::string msg = "FabricaDePan: iésimo MaestroPanadero creado";
-    Logger::writeToLogFile(msg);
+    const char* msg = "FabricaDePan: iésimo MaestroPanadero creado\n";
+    while(this->logger->lockLogger() == -1) sched_yield();
+    this->logger->writeToLogFile(msg, strlen(msg));
+    this->logger->unlockLogger();
     }
 
     //creo al maestroPizzero
@@ -52,14 +56,17 @@ int FabricaDePan::abrirLaFabrica() {
 
 
 int FabricaDePan::cerrarLaFabrica() {
-    // delete log;
-    std::string msg = "FabricaDePan: estamos cerrando.\n\nThis is it, fellas"; 
-    Logger::writeToLogFile(msg);
+    const char* msg = "FabricaDePan: estamos cerrando.\n\nThis is it, fellas\n";
+    while(this->logger->lockLogger() == -1) sched_yield();
+    this->logger->writeToLogFile(msg, strlen(msg));
+    this->logger->unlockLogger();
     return 0;
 }
 
 
 FabricaDePan:: ~FabricaDePan() {
+    // Logger is deleted finally by main function
+
     delete maestroEspecialista;
     for(auto maestroPanadero: maestrosPanaderos) {
         delete maestroPanadero;       

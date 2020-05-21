@@ -10,6 +10,7 @@
 class MaestroEspecialista : public Maestro {
 
     private:
+        Logger* logger;
         std::vector <MasaMadre*> masaMadre;
         int racionesConsumidas = 0;
         
@@ -24,7 +25,7 @@ class MaestroEspecialista : public Maestro {
     protected:
 
     public:
-        MaestroEspecialista();
+        MaestroEspecialista(Logger* logger);
         ~MaestroEspecialista();
         virtual int jornadaLaboral();       // capaz este esté de más
 

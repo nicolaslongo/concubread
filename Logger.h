@@ -1,28 +1,33 @@
 #ifndef LOGGER_H_
 #define LOGGER_H_
 
-#define EOL " \n"
 #define FILE_FOLDER "logfiles/"
+
+// #include <iostream>
+// #include <fstream>
+#include <unistd.h>
+#include <fcntl.h>
 #include <string>
-#include <iostream>
-#include <fstream>
 #include <ctime>
-#include <mutex>          // std::mutex, std::lock
 using namespace std;
 
 class Logger {
 
     private:
-        static std::ofstream file;
+		struct flock fl;
+		int fd;
+		std::string nombre;
 
     protected:
 
     public:
         Logger();
         ~Logger();
-        static void writeToLogFile(std::string msg);
-        //static void writeToLogFile(std::string& msg);
-        static void closeFileInThisScope();
+		int lockLogger();
+		int unlockLogger();
+        // void writeToLogFile(std::string msg);
+		ssize_t writeToLogFile(const char* buffer, const ssize_t buffsize) const;
+        void closeFileInThisScope();
 };
 
 #endif

@@ -13,7 +13,7 @@ void Fifo::cerrar() {
 		std::string mensaje = std::string("Fifo:Error in close(): ") 
 			+ std::string(strerror(errno)) + std::string("\nEste fue el fd: ")
 			+ std::to_string(fd);
-		Logger::writeToLogFile(mensaje);
+		// Logger::writeToLogFile(mensaje);
 		throw mensaje;
 	}
 	fd = -1;

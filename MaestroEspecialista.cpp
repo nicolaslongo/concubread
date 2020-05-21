@@ -1,7 +1,7 @@
 # include "MaestroEspecialista.h"
 
-MaestroEspecialista::MaestroEspecialista () : Maestro::Maestro() {
-
+MaestroEspecialista::MaestroEspecialista (Logger* logger) : Maestro::Maestro() {
+    this->logger = logger;
 }
 
 void MaestroEspecialista::abrirCanalesDeComunicacion() {
@@ -9,22 +9,28 @@ void MaestroEspecialista::abrirCanalesDeComunicacion() {
     try {
         fifoEscritura = new FifoEscritura(std::string("./fifos/entregas_de_MM"));
         fifoEscritura->abrir();
-        std::string mensaje = "MaestroEspecialista: abrí el fifo <entregas_de_MM>";
-        Logger::writeToLogFile(mensaje);
     } catch ( std::string& mensaje ) {
-        Logger::writeToLogFile(mensaje);
+        const char* msg = mensaje.c_str();
+        this->logger->lockLogger();
+        this->logger->writeToLogFile(msg, strlen(msg));
+        this->logger->unlockLogger();
         exit(-1);
     }
     try {
         fifoLectura = new FifoLectura(std::string("./fifos/pedidos_de_MM"));
         fifoLectura->abrir();
-        std::string mensaje = "MaestroEspecialista: abrí el fifo <pedidos_de_MM>";
-        Logger::writeToLogFile(mensaje);
     } catch ( std::string& mensaje ) {
-        Logger::writeToLogFile(mensaje);
+        const char* msg = mensaje.c_str();
+        this->logger->lockLogger();
+        this->logger->writeToLogFile(msg, strlen(msg));
+        this->logger->unlockLogger();
         exit(-1);
     }
 
+    const char* mensaje = "MaestroEspecialista: abrí los fifos <entregas_de_MM> y <pedidos_de_MM>\n";
+    this->logger->lockLogger();
+    this->logger->writeToLogFile(mensaje, strlen(mensaje));
+    this->logger->unlockLogger();
 }
 
 int MaestroEspecialista::jornadaLaboral() {
@@ -42,8 +48,10 @@ int MaestroEspecialista::jornadaLaboral() {
 
     // realizar mis tareas
     int resultado = realizarMisTareas();
-    std::string msg = "Maestro especialista: Realicé mis tareas, me voy a la mierda"; 
-    Logger::writeToLogFile(msg);
+    const char* msg = "Maestro especialista: Realicé mis tareas, me voy a la mierda\n"; 
+    this->logger->lockLogger();
+    this->logger->writeToLogFile(msg, strlen(msg));
+    this->logger->unlockLogger();
 
     // terminar jornada
     resultado = terminarJornada();
@@ -60,9 +68,14 @@ int MaestroEspecialista::realizarMisTareas() {
         alimentarMasaMadre(masaMadre.size());
 
         int gramaje = masaMadre.at(iterations)->getGramaje();
-        std::string msg = "Maestro especialista: nueva ración de " + std::to_string(gramaje)
+
+
+        std::string mensaje = "Maestro especialista: nueva ración de " + std::to_string(gramaje)
          + " gramos.";
-        Logger::writeToLogFile(msg);
+        const char* msg = mensaje.c_str();
+        this->logger->lockLogger();
+        this->logger->writeToLogFile(msg, strlen(msg));
+        this->logger->unlockLogger();
         iterations++;
         // escuchar pedidos de los otros Maestros
     
@@ -83,7 +96,10 @@ int MaestroEspecialista::terminarJornada() {
     try {
         fifoEscritura->cerrar();
     } catch ( std::string& mensaje ) {
-        Logger::writeToLogFile(mensaje);
+        const char* msg = mensaje.c_str();
+        this->logger->lockLogger();
+        this->logger->writeToLogFile(msg, strlen(msg));
+        this->logger->unlockLogger();
         exit(-1);
     }
     delete fifoEscritura;
@@ -91,7 +107,10 @@ int MaestroEspecialista::terminarJornada() {
     try {
         fifoLectura->cerrar();
     } catch ( std::string& mensaje ) {
-        Logger::writeToLogFile(mensaje);
+        const char* msg = mensaje.c_str();
+        this->logger->lockLogger();
+        this->logger->writeToLogFile(msg, strlen(msg));
+        this->logger->unlockLogger();
         exit(-1);
     }
     delete fifoLectura;
@@ -105,7 +124,6 @@ int MaestroEspecialista::terminarJornada() {
 int MaestroEspecialista::empezarJornada() {
     return CHILD_PROCESS;
 }
-
 
 void MaestroEspecialista::alimentarMasaMadre(int numeroDeRacion){
     MasaMadre* racion = new MasaMadre(numeroDeRacion);
