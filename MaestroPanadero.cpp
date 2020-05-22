@@ -1,8 +1,7 @@
 # include "MaestroPanadero.h"
 
-MaestroPanadero::MaestroPanadero () : Maestro::Maestro() {
-    
-
+MaestroPanadero::MaestroPanadero (Logger* logger, int myId) : Maestro::Maestro(myId) {
+    this->logger = logger;
 }
 
 void MaestroPanadero::abrirCanalesDeComunicacion() {
@@ -10,22 +9,29 @@ void MaestroPanadero::abrirCanalesDeComunicacion() {
     try {
         fifoLectura = new FifoLectura(std::string("./fifos/entregas_de_MM"));
         fifoLectura->abrir();
-        // std::string mensaje = "MaestroPanadero: abrí el fifo <entregas_de_MM>";
-        // Logger::writeToLogFile(mensaje);
 
     } catch ( std::string& mensaje ) {
-        // std::cerr << mensaje << std::endl;
+        const char* msg = mensaje.c_str();
+        this->logger->lockLogger();
+        this->logger->writeToLogFile(msg, strlen(msg));
+        this->logger->unlockLogger();
         exit(-1);
     }
     try {
         fifoEscritura = new FifoEscritura(std::string("./fifos/pedidos_de_MM"));
         fifoEscritura->abrir();
-        // std::string mensaje = "MaestroPanadero: abrí el fifo <pedidos_de_MM>";
-        // Logger::writeToLogFile(mensaje);
     } catch ( std::string& mensaje ) {
-        // std::cerr << mensaje << std::endl;
+        const char* msg = mensaje.c_str();
+        this->logger->lockLogger();
+        this->logger->writeToLogFile(msg, strlen(msg));
+        this->logger->unlockLogger();
         exit(-1);
     }
+
+    const char* mensaje = "MaestroPanadero: abrí los fifos <entregas_de_MM> y <pedidos_de_MM>\n";
+    this->logger->lockLogger();
+    this->logger->writeToLogFile(mensaje, strlen(mensaje));
+    this->logger->unlockLogger();
 
 }
 
@@ -41,8 +47,10 @@ int MaestroPanadero::jornadaLaboral() {
     abrirCanalesDeComunicacion();
     // realizar mis tareas
     int resultado = realizarMisTareas();
-    // std::string msg = "Maestro Panero: Realicé mis tareas, me voy a la mierda"; 
-    // Logger::writeToLogFile(msg);
+    const char* msg = "MaestroPanadero: Realicé mis tareas, me voy a la mierda\n"; 
+    this->logger->lockLogger();
+    this->logger->writeToLogFile(msg, strlen(msg));
+    this->logger->unlockLogger();
 
     // terminar jornada
     resultado = terminarJornada();
@@ -55,28 +63,26 @@ int MaestroPanadero::realizarMisTareas() {
     // bool keep_looping = true;
     int iterations = 0;
     sleep(1);
-    while(iterations < 10) {
+    while(iterations < 2) {
 
-        // pedir la masa madre por el FIFO
+        // TODO: chequear esto try catch
+        fifoEscritura->escribir( (const void*) PEDIDO_MM, strlen(PEDIDO_MM));
 
         // recibir la masa madre por el FIFO
+        // TODO: chequear esto try catchPEDIDO_MM
+        int* lectura_temporal = (int*) malloc( sizeof(int*) );
 
-        // int gramaje = masaMadre.at(iterations)->getGramaje();
-        // std::string msg = "Maestro especialista: nueva ración de " + std::to_string(gramaje)
-        //  + " gramos.";
-        // Logger::writeToLogFile(msg);
+        fifoLectura->leer( (void*) lectura_temporal, sizeof(int) );
+
+        std::cout << "Recibi esto " << *lectura_temporal << ". Soy" << this->getId() << endl;
 
         // hornear el pan
 
         // colocarlo en la gran canasta
+        free(lectura_temporal);
         iterations++;
-        // escuchar pedidos de los otros Maestros
     
 
-        // si los hay, otorgarles masa madre
-
-        // fijarse si en el Pipe me llegó la señal de finalización. Esto es si no uso SIGNALS
-        // sería válido???
     }
     sleep(1);
     return CHILD_PROCESS;
@@ -89,7 +95,10 @@ int MaestroPanadero::terminarJornada() {
     try {
         fifoEscritura->cerrar();
     } catch ( std::string& mensaje ) {
-        // std::cerr << mensaje << std::endl;
+        const char* msg = mensaje.c_str();
+        this->logger->lockLogger();
+        this->logger->writeToLogFile(msg, strlen(msg));
+        this->logger->unlockLogger();
         exit(-1);
     }
     delete fifoEscritura;
@@ -97,7 +106,10 @@ int MaestroPanadero::terminarJornada() {
     try {
         fifoLectura->cerrar();
     } catch ( std::string& mensaje ) {
-        // std::cerr << mensaje << std::endl;
+        const char* msg = mensaje.c_str();
+        this->logger->lockLogger();
+        this->logger->writeToLogFile(msg, strlen(msg));
+        this->logger->unlockLogger();
         exit(-1);
     }
     delete fifoLectura;

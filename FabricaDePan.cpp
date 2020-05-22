@@ -1,5 +1,7 @@
 #include "FabricaDePan.h"
 
+const int CANT_PANADEROS = 3;
+
 FabricaDePan::FabricaDePan(Logger* logger) {
 
     // leo los pedidos de algun lado. Los levanto
@@ -11,20 +13,22 @@ FabricaDePan::FabricaDePan(Logger* logger) {
     }
     
     // creo al maestroEspecialista
-    maestroEspecialista = new MaestroEspecialista(logger);
+    maestroEspecialista = new MaestroEspecialista(logger, 0);
     const char* msg = "FabricaDePan: MaestroEspecialista creado\n";
-    while(this->logger->lockLogger() == -1) sched_yield();
+    this->logger->lockLogger();
     this->logger->writeToLogFile(msg, strlen(msg));
     this->logger->unlockLogger();
 
     // creo a los maestros panaderos
-    for (int i = 0; i < 1; i++) {
-        maestrosPanaderos.push_back(new MaestroPanadero());
-    const char* msg = "FabricaDePan: iésimo MaestroPanadero creado\n";
-    while(this->logger->lockLogger() == -1) sched_yield();
+    for (int i = 1; i < CANT_PANADEROS; i++) {
+        maestrosPanaderos.push_back(new MaestroPanadero(logger, i));
+    }
+    std::string mensaje = "FabricaDePan: creé " + std::to_string(CANT_PANADEROS) 
+            + " MaestrosPanaderos\n";
+    msg = mensaje.c_str();
+    this->logger->lockLogger();
     this->logger->writeToLogFile(msg, strlen(msg));
     this->logger->unlockLogger();
-    }
 
     //creo al maestroPizzero
 
@@ -41,7 +45,7 @@ int FabricaDePan::abrirLaFabrica() {
     if (resultado == CHILD_PROCESS) {
         return resultado;
     }
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < CANT_PANADEROS - 1; i++) {
         resultado = maestrosPanaderos.at(i)->jornadaLaboral();
         if (resultado == CHILD_PROCESS) {
             return resultado;

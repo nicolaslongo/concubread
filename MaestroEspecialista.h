@@ -4,6 +4,8 @@
 #include "Maestro.h"
 #include "MasaMadre.h"
 #include "Logger.h"
+
+#include <iostream>
 #include <unistd.h>
 #include <vector>
 
@@ -17,6 +19,9 @@ class MaestroEspecialista : public Maestro {
         
         void crearMasaMadre();
         void alimentarMasaMadre(int numeroDeRacion);
+        int getRacionDeMasaMadre();
+        int getRacionesConsumidas();
+        void aumentarRacionesConsumidas();
         virtual int empezarJornada();
         virtual int realizarMisTareas();
         virtual int terminarJornada();
@@ -25,7 +30,7 @@ class MaestroEspecialista : public Maestro {
     protected:
 
     public:
-        MaestroEspecialista(Logger* logger);
+        MaestroEspecialista(Logger* logger, int myId);
         ~MaestroEspecialista();
         virtual int jornadaLaboral();       // capaz este esté de más
 
