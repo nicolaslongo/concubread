@@ -1,9 +1,11 @@
 #include "FabricaDePan.h"
 
-FabricaDePan::FabricaDePan() {
+const int CANT_PANADEROS = 3;
+
+FabricaDePan::FabricaDePan(Logger* logger) {
 
     // leo los pedidos de algun lado. Los levanto
-    
+    this->logger = logger;
 
     // creo a los recepcionistas
     for (int i = 0; i < 1; i++) {
@@ -11,16 +13,22 @@ FabricaDePan::FabricaDePan() {
     }
     
     // creo al maestroEspecialista
-    maestroEspecialista = new MaestroEspecialista();
-    std::string msg = "FabricaDePan: MaestroEspecialista creado";
-    Logger::writeToLogFile(msg);
+    maestroEspecialista = new MaestroEspecialista(logger, 0);
+    const char* msg = "FabricaDePan: MaestroEspecialista creado\n";
+    this->logger->lockLogger();
+    this->logger->writeToLogFile(msg, strlen(msg));
+    this->logger->unlockLogger();
 
     // creo a los maestros panaderos
-    for (int i = 0; i < 1; i++) {
-        maestrosPanaderos.push_back(new MaestroPanadero());
-    std::string msg = "FabricaDePan: iésimo MaestroPanadero creado";
-    Logger::writeToLogFile(msg);
+    for (int i = 1; i < CANT_PANADEROS; i++) {
+        maestrosPanaderos.push_back(new MaestroPanadero(logger, i));
     }
+    std::string mensaje = "FabricaDePan: creé " + std::to_string(CANT_PANADEROS) 
+            + " MaestrosPanaderos\n";
+    msg = mensaje.c_str();
+    this->logger->lockLogger();
+    this->logger->writeToLogFile(msg, strlen(msg));
+    this->logger->unlockLogger();
 
     //creo al maestroPizzero
 
@@ -37,7 +45,7 @@ int FabricaDePan::abrirLaFabrica() {
     if (resultado == CHILD_PROCESS) {
         return resultado;
     }
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < CANT_PANADEROS - 1; i++) {
         resultado = maestrosPanaderos.at(i)->jornadaLaboral();
         if (resultado == CHILD_PROCESS) {
             return resultado;
@@ -52,14 +60,17 @@ int FabricaDePan::abrirLaFabrica() {
 
 
 int FabricaDePan::cerrarLaFabrica() {
-    // delete log;
-    std::string msg = "FabricaDePan: estamos cerrando.\n\nThis is it, fellas"; 
-    Logger::writeToLogFile(msg);
+    const char* msg = "FabricaDePan: estamos cerrando.\n\nThis is it, fellas\n";
+    while(this->logger->lockLogger() == -1) sched_yield();
+    this->logger->writeToLogFile(msg, strlen(msg));
+    this->logger->unlockLogger();
     return 0;
 }
 
 
 FabricaDePan:: ~FabricaDePan() {
+    // Logger is deleted finally by main function
+
     delete maestroEspecialista;
     for(auto maestroPanadero: maestrosPanaderos) {
         delete maestroPanadero;       

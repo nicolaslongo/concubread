@@ -15,10 +15,10 @@ void FifoEscritura::abrir() {
 	if(fd == -1) {
 		std::string mensaje = std::string("FifoEscritura:Error in open(): ") 
 			+ std::string(strerror(errno));
-		Logger::writeToLogFile(mensaje);
+		// Logger::writeToLogFile(mensaje);
 		throw mensaje;
 	}
-	Logger::writeToLogFile(std::string("FifoEscritura: fd resultado es ") + std::to_string(fd));
+	// Logger::writeToLogFile(std::string("FifoEscritura: fd resultado es ") + std::to_string(fd));
 }
 
 ssize_t FifoEscritura::escribir(const void* buffer,const ssize_t buffsize) const {	
@@ -27,7 +27,7 @@ ssize_t FifoEscritura::escribir(const void* buffer,const ssize_t buffsize) const
 		std::string mensaje = std::string("FifoEscritura:Error in write(): ") 
 			+ std::string(strerror(errno)) + std::string("\nEste fue el fd: ")
 			+ std::to_string(fd);
-		Logger::writeToLogFile(mensaje);
+		// Logger::writeToLogFile(mensaje);
 		throw mensaje;
 	}
 	return resultado;

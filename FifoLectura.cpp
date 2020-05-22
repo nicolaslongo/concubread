@@ -13,7 +13,7 @@ void FifoLectura::abrir() {
 	if(fd == -1) {
 		std::string mensaje = std::string("FifoLectura:Error in open(): ") 
 			+ std::string(strerror(errno));
-		Logger::writeToLogFile(mensaje);
+		// Logger::writeToLogFile(mensaje);
 		throw mensaje;
 	}
 }
@@ -24,7 +24,7 @@ ssize_t FifoLectura::leer(void* buffer,const ssize_t buffsize) const {
 		std::string mensaje = std::string("FifoLectura:Error in read(): ") 
 			+ std::string(strerror(errno)) + std::string("\nEste fue el fd: ")
 			+ std::to_string(fd);
-		Logger::writeToLogFile(mensaje);
+		// Logger::writeToLogFile(mensaje);
 		throw mensaje;
 	}
 	return resultado;

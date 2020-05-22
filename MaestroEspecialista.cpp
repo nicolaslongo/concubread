@@ -1,7 +1,7 @@
 # include "MaestroEspecialista.h"
 
-MaestroEspecialista::MaestroEspecialista () : Maestro::Maestro() {
-
+MaestroEspecialista::MaestroEspecialista (Logger* logger, int myId) : Maestro::Maestro(myId) {
+    this->logger = logger;
 }
 
 void MaestroEspecialista::abrirCanalesDeComunicacion() {
@@ -9,22 +9,28 @@ void MaestroEspecialista::abrirCanalesDeComunicacion() {
     try {
         fifoEscritura = new FifoEscritura(std::string("./fifos/entregas_de_MM"));
         fifoEscritura->abrir();
-        std::string mensaje = "MaestroEspecialista: abrí el fifo <entregas_de_MM>";
-        Logger::writeToLogFile(mensaje);
     } catch ( std::string& mensaje ) {
-        Logger::writeToLogFile(mensaje);
+        const char* msg = mensaje.c_str();
+        this->logger->lockLogger();
+        this->logger->writeToLogFile(msg, strlen(msg));
+        this->logger->unlockLogger();
         exit(-1);
     }
     try {
         fifoLectura = new FifoLectura(std::string("./fifos/pedidos_de_MM"));
         fifoLectura->abrir();
-        std::string mensaje = "MaestroEspecialista: abrí el fifo <pedidos_de_MM>";
-        Logger::writeToLogFile(mensaje);
     } catch ( std::string& mensaje ) {
-        Logger::writeToLogFile(mensaje);
+        const char* msg = mensaje.c_str();
+        this->logger->lockLogger();
+        this->logger->writeToLogFile(msg, strlen(msg));
+        this->logger->unlockLogger();
         exit(-1);
     }
 
+    const char* mensaje = "MaestroEspecialista: abrí los fifos <entregas_de_MM> y <pedidos_de_MM>\n";
+    this->logger->lockLogger();
+    this->logger->writeToLogFile(mensaje, strlen(mensaje));
+    this->logger->unlockLogger();
 }
 
 int MaestroEspecialista::jornadaLaboral() {
@@ -35,15 +41,17 @@ int MaestroEspecialista::jornadaLaboral() {
         return PARENT_PROCESS;
     }
     // Child process. This is going to continue running from here
-    // TODO: declare this as constants in class.h
 
     // open up streams flow
     abrirCanalesDeComunicacion();
 
     // realizar mis tareas
     int resultado = realizarMisTareas();
-    std::string msg = "Maestro especialista: Realicé mis tareas, me voy a la mierda"; 
-    Logger::writeToLogFile(msg);
+
+    const char* msg = "Maestro especialista: Realicé mis tareas, me voy a la mierda\n"; 
+    this->logger->lockLogger();
+    this->logger->writeToLogFile(msg, strlen(msg));
+    this->logger->unlockLogger();
 
     // terminar jornada
     resultado = terminarJornada();
@@ -52,27 +60,44 @@ int MaestroEspecialista::jornadaLaboral() {
  
 int MaestroEspecialista::realizarMisTareas() {
 
-    // Acá va la variable que modificaremos usando SIGNALS
-    // bool keep_looping = true;
+    // bool someones_listening = true;
     int iterations = 0;
+    char* lectura_temporal = (char*) malloc( strlen(PEDIDO_MM) * sizeof(char*) );
+    memset(lectura_temporal, 0, strlen(PEDIDO_MM) * sizeof(char*));
+
     while(iterations < 10) {
         // alimentar la masa madre
         alimentarMasaMadre(masaMadre.size());
-
         int gramaje = masaMadre.at(iterations)->getGramaje();
-        std::string msg = "Maestro especialista: nueva ración de " + std::to_string(gramaje)
-         + " gramos.";
-        Logger::writeToLogFile(msg);
+        std::string mensaje = "MaestroEspecialista: nueva ración de " + std::to_string(gramaje)
+         + " gramos.\n";
+        const char* msg = mensaje.c_str();
+
+        this->logger->lockLogger();
+        this->logger->writeToLogFile(msg, strlen(msg));
+        this->logger->unlockLogger();
+
+        this->fifoLectura->leer( (void*) lectura_temporal, strlen(PEDIDO_MM) );
+
+        if(*lectura_temporal == EOF) {
+            // Tiene que andar esto eventualmente...
+            // someones_listening = false;
+            const char* msg = "MaestroEspecialista: todos los demás maestros finalizaron de hornear. No hay más masa madre por hoy.\n";
+            this->logger->lockLogger();
+            this->logger->writeToLogFile(msg, strlen(msg));
+            this->logger->unlockLogger();
+        }
+
+        this->logger->lockLogger();
+        this->logger->writeToLogFile(lectura_temporal, strlen(lectura_temporal));
+        this->logger->unlockLogger();
+
+        int nuevaRacion = this->getRacionDeMasaMadre();
+        this->fifoEscritura->escribir( (const void*) &nuevaRacion, sizeof(int));
         iterations++;
-        // escuchar pedidos de los otros Maestros
-    
-
-        // si los hay, otorgarles masa madre
-
-        // fijarse si en el Pipe me llegó la señal de finalización. Esto es si no uso SIGNALS
-        // sería válido???
     }
-    sleep(2);
+    sleep(4);
+    free(lectura_temporal);        // fijarse si en el Pipe me llegó la señal de finalización. Esto es si no uso SIGNALS        // sería válido???
     return 0;
 
 }
@@ -82,16 +107,24 @@ int MaestroEspecialista::terminarJornada() {
 
     try {
         fifoEscritura->cerrar();
+        fifoEscritura->eliminar();
     } catch ( std::string& mensaje ) {
-        Logger::writeToLogFile(mensaje);
+        const char* msg = mensaje.c_str();
+        this->logger->lockLogger();
+        this->logger->writeToLogFile(msg, strlen(msg));
+        this->logger->unlockLogger();
         exit(-1);
     }
     delete fifoEscritura;
 
     try {
         fifoLectura->cerrar();
+        fifoLectura->eliminar();
     } catch ( std::string& mensaje ) {
-        Logger::writeToLogFile(mensaje);
+        const char* msg = mensaje.c_str();
+        this->logger->lockLogger();
+        this->logger->writeToLogFile(msg, strlen(msg));
+        this->logger->unlockLogger();
         exit(-1);
     }
     delete fifoLectura;
@@ -106,11 +139,25 @@ int MaestroEspecialista::empezarJornada() {
     return CHILD_PROCESS;
 }
 
-
 void MaestroEspecialista::alimentarMasaMadre(int numeroDeRacion){
     MasaMadre* racion = new MasaMadre(numeroDeRacion);
     masaMadre.push_back(racion);
 }
+
+int MaestroEspecialista::getRacionDeMasaMadre() {
+    MasaMadre* estaRacion = this->masaMadre.at(this->getRacionesConsumidas());
+    this->aumentarRacionesConsumidas();
+    return estaRacion->getGramaje();
+}
+
+int MaestroEspecialista::getRacionesConsumidas() {
+    return this->racionesConsumidas;
+}
+
+void MaestroEspecialista::aumentarRacionesConsumidas() {
+    this->racionesConsumidas++;
+}
+
 
 // TODO: se podría llevar esto al destructor de la clase padre
 MaestroEspecialista::~MaestroEspecialista() {

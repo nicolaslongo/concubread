@@ -1,35 +1,51 @@
 #include "Logger.h"
 
-std::ofstream Logger::file;
-
 Logger::Logger() {
+
+
+	this->nombre = nombre;
+	this->fl.l_type = F_WRLCK;
+	this->fl.l_whence = SEEK_SET;
+	this->fl.l_start = 0;
+	this->fl.l_len = 0;
+
     time_t now = time(0);
     std::string dt = string(ctime(&now));
     std::string name = string(FILE_FOLDER) + "log_file_" + dt + ".txt";
-    file.open(name, ios::out | ios::app);
-    
-    file << "Welcome to my log file \n \n";
-    file.flush();
+
+	this->fd = open (name.c_str(), O_CREAT|O_WRONLY, 0777);
+
 }
 
-Logger::~Logger() {
-    if(file.is_open()) {
-        file.flush();
-        file.close();
-    }
+int Logger::lockLogger() {
+	this->fl.l_type = F_WRLCK;
+	return fcntl ( this->fd,F_SETLKW,&(this->fl) );
 }
 
-void Logger::writeToLogFile(std::string msg) {
-    if(file.is_open()) {
-        file << msg + "\n";
-        file.flush();
-    }
-    
+int Logger::unlockLogger() {
+	this->fl.l_type = F_UNLCK;
+	return fcntl ( this->fd,F_SETLK,&(this->fl) );
 }
+
+
+ssize_t Logger::writeToLogFile(const char* buffer, const ssize_t buffsize) const {
+	lseek(this->fd, 0, SEEK_END);
+	return write(this->fd, buffer, buffsize);
+}
+
 
 void Logger::closeFileInThisScope() {
-    if(file.is_open()) {
-        file.close();
-    }
+	close(this->fd);
+}
 
+
+// void Logger::writeToLogFile(std::string msg) {
+//     if(file.is_open()) {
+//         file << msg + "\n";
+//         file.flush();
+//     }
+// }
+
+Logger::~Logger() {
+	close(this->fd);
 }
