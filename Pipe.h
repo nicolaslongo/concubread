@@ -3,6 +3,8 @@
 
 #include <unistd.h>
 #include <fcntl.h>
+#include <string>
+#include <sys/file.h>
 
 class Pipe {
 
@@ -19,6 +21,9 @@ public:
 	~Pipe();
 
 	void setearModo ( const int modo );
+
+	int lockPipe();
+	int unlockPipe();
 
 	ssize_t escribir ( const void* dato,const int datoSize );
 	ssize_t leer ( void* buffer,const int buffSize );

@@ -2,8 +2,6 @@
 
 Pipe :: Pipe() : lectura(true), escritura(true) {
 	pipe ( this->descriptores );
-	/*fcntl ( this->descriptors[0],F_SETFL,O_NONBLOCK );
-	fcntl ( this->descriptors[1],F_SETFL,O_NONBLOCK );*/
 }
 
 Pipe::~Pipe() {
@@ -38,16 +36,48 @@ ssize_t Pipe :: leer ( void* buffer,const int buffSize ) {
 	return read ( this->descriptores[0],buffer,buffSize );
 }
 
+int Pipe::lockPipe() {
+	int fd;
+	if (this->lectura == true) {
+		fd = this->descriptores[LECTURA];
+	}
+	else if (this->escritura == true) {
+		fd = this->descriptores[ESCRITURA];
+	}
+
+	int resultado_lock = flock(fd, LOCK_EX);
+	if (resultado_lock == -1) {
+		throw "Error lockeando un Pipe. Este es mi fd " + std::to_string(fd);
+	}
+	return resultado_lock;
+}
+
+int Pipe::unlockPipe() {
+	int fd;
+	if (this->lectura == true) {
+		fd = this->descriptores[LECTURA];
+	}
+	else if (this->escritura == true) {
+		fd = this->descriptores[ESCRITURA];
+	}
+	int resultado_lock = flock( fd, LOCK_UN);
+	if (resultado_lock == -1) {
+		throw "Error deslockeando un Pipe. Este es mi fd " + std::to_string(fd);
+	}
+	return resultado_lock;
+}
+
+
 int Pipe :: getFdLectura () const {
 	if ( this->lectura == true )
-		return this->descriptores[0];
+		return this->descriptores[LECTURA];
 	else
 		return -1;
 }
 
 int Pipe :: getFdEscritura () const {
 	if ( this->escritura == true )
-		return this->descriptores[1];
+		return this->descriptores[ESCRITURA];
 	else
 		return -1;
 }

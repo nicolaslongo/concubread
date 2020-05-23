@@ -3,12 +3,15 @@
 
 #include "Trabajador.h"
 #include "Pipe.h"
+#include "SIGINT_Handler.h"
+#include "SignalHandler.h"
 
 class Recepcionista : public Trabajador {
 
     private:
         Pipe* pipeEscritura;
         Logger* logger;
+        SIGINT_Handler* sigint_handler;
 
     protected:
 

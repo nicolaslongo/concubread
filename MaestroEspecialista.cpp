@@ -65,7 +65,7 @@ int MaestroEspecialista::realizarMisTareas() {
     char* lectura_temporal = (char*) malloc( strlen(PEDIDO_MM) * sizeof(char*) );
     memset(lectura_temporal, 0, strlen(PEDIDO_MM) * sizeof(char*));
 
-    while(iterations < 5) {
+    while(iterations < 4) {
         // alimentar la masa madre
         alimentarMasaMadre(masaMadre.size());
         int gramaje = masaMadre.at(iterations)->getGramaje();
@@ -86,16 +86,15 @@ int MaestroEspecialista::realizarMisTareas() {
             this->logger->writeToLogFile(msg, strlen(msg));
             this->logger->unlockLogger();
         }
-
-        this->logger->lockLogger();
-        this->logger->writeToLogFile(lectura_temporal, strlen(lectura_temporal));
-        this->logger->unlockLogger();
+        // this->logger->lockLogger();
+        // this->logger->writeToLogFile(lectura_temporal, strlen(lectura_temporal));
+        // this->logger->unlockLogger();
 
         int nuevaRacion = this->getRacionDeMasaMadre();
         this->fifoEscritura->escribir( (const void*) &nuevaRacion, sizeof(int));
         iterations++;
     }
-    sleep(4);
+    // sleep(4);
     free(lectura_temporal);        // fijarse si en el Pipe me llegó la señal de finalización. Esto es si no uso SIGNALS        // sería válido???
     return 0;
 

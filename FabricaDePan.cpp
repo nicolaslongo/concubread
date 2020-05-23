@@ -58,8 +58,15 @@ int FabricaDePan::abrirLaFabrica() {
         }
     }
 
-    // same para cada proceso
+    int CANT_RECEPCIONSITAS = this->config->getCantidadRecepcionistas();
+    for (int i = 0; i < CANT_RECEPCIONSITAS; i++) {
+        resultado = recepcionistas.at(i)->jornadaLaboral();
+        if (resultado == CHILD_PROCESS) {
+            return resultado;
+        }
+    }
 
+    // same para cada proceso
     return PARENT_PROCESS;
     
 }
@@ -67,7 +74,7 @@ int FabricaDePan::abrirLaFabrica() {
 
 int FabricaDePan::cerrarLaFabrica() {
     const char* msg = "FabricaDePan: estamos cerrando.\n\nThis is it, fellas\n";
-    while(this->logger->lockLogger() == -1) sched_yield();
+    this->logger->lockLogger();
     this->logger->writeToLogFile(msg, strlen(msg));
     this->logger->unlockLogger();
     return 0;
@@ -77,8 +84,8 @@ int FabricaDePan::cerrarLaFabrica() {
 FabricaDePan:: ~FabricaDePan() {
     // Logger is deleted finally by main function
 
-    for (auto pipe: pipes) {
-        delete pipe;
+    for(auto recepcionista: recepcionistas) {
+        delete recepcionista;       
     }
 
     delete maestroEspecialista;
@@ -86,8 +93,7 @@ FabricaDePan:: ~FabricaDePan() {
         delete maestroPanadero;       
     }
 
-    for(auto recepcionista: recepcionistas) {
-        delete recepcionista;       
+    for (auto pipe: pipes) {
+        delete pipe;
     }
-
 }

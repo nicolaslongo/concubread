@@ -22,9 +22,9 @@ int Recepcionista::jornadaLaboral() {
     // realizar mis tareas
     int resultado = realizarMisTareas();
 
-    const char* msg = "Recepcionista: realicé mis tareas, me voy a la mierda\n"; 
+    const char* msg_salida = "Recepcionista: realicé mis tareas, me voy a la mierda\n"; 
     this->logger->lockLogger();
-    this->logger->writeToLogFile(msg, strlen(msg));
+    this->logger->writeToLogFile(msg_salida, strlen(msg_salida));
     this->logger->unlockLogger();
 
     // terminar jornada
@@ -38,19 +38,52 @@ void Recepcionista::abrirCanalesDeComunicacion() {
     // el Pipe ya está abierto, pero lo cierro para lectura
     this->pipeEscritura->setearModo( this->pipeEscritura->ESCRITURA );
 
+    const char* msg = "Recepcionista: abrí el pipe para escritura\n"; 
+    this->logger->lockLogger();
+    this->logger->writeToLogFile(msg, strlen(msg));
+    this->logger->unlockLogger();
+
+	SIGINT_Handler* sigint_handler = new SIGINT_Handler();
+    this->sigint_handler = sigint_handler;
+	SignalHandler :: getInstance()->registrarHandler (SIGINT, sigint_handler);
+
 }
 
 int Recepcionista::realizarMisTareas() {
     // acá hago todo lo que tengo que hacer en un loop
 
+    int ITERATIONS = 0;
+
+    while(this->sigint_handler->getGracefulQuit() == 0) {
+
+        if (ITERATIONS < 4) {
+
+            const char* PP = "Pedido de pan\n";
+
+            this->pipeEscritura->escribir( (const void*) PP, strlen(PP) );
+
+            const char* msg = "Recepcionista: atendí un pedido de Pan y lo pasé.\n";
+            this->logger->lockLogger();
+            this->logger->writeToLogFile(msg, strlen(msg));
+            this->logger->unlockLogger();
+            ITERATIONS++;
+        }
+    }
+
+    const char* exit_msg = "Recepcionista: recibí SIGINT y ya no trabajo más.\n";
+    this->logger->lockLogger();
+    this->logger->writeToLogFile(exit_msg, strlen(exit_msg));
+    this->logger->unlockLogger();
+
     return TODO_CHILD_PROCESS;
 }
 
 int Recepcionista::terminarJornada() {
-    // limpieza de coso
 
+    // limpieza de coso
     this->pipeEscritura->cerrar();
-    
+    delete this->sigint_handler;
+    SignalHandler::destruir();
     return TODO_CHILD_PROCESS;
 }
 
