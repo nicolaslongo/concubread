@@ -5,10 +5,16 @@ FabricaDePan::FabricaDePan(Logger* logger, Configuracion* config) {
     // leo los pedidos de algun lado. Los levanto
     this->logger = logger;
     this->config = config;
+    
+    Pipe* pedidosTelefonicosDePan = new Pipe();
+    this->pipes.push_back(pedidosTelefonicosDePan);
+    // idem pizza
 
     // creo a los recepcionistas
-    for (int i = 0; i < 1; i++) {
+    int CANT_RECEPCIONISTAS = this->config->getCantidadRecepcionistas();
+    for (int i = 0; i < CANT_RECEPCIONISTAS; i++) {
         // los creo
+        this->recepcionistas.push_back(new Recepcionista(logger, i, pedidosTelefonicosDePan));
     }
     
     // creo al maestroEspecialista
@@ -21,7 +27,7 @@ FabricaDePan::FabricaDePan(Logger* logger, Configuracion* config) {
     // creo a los maestros panaderos
     int CANT_PANADEROS = this->config->getCantidadMaestrosPanaderos();
     for (int i = 0; i < CANT_PANADEROS; i++) {
-        maestrosPanaderos.push_back(new MaestroPanadero(logger, i));
+        maestrosPanaderos.push_back(new MaestroPanadero(logger, i, pedidosTelefonicosDePan));
     }
     std::string mensaje = "FabricaDePan: creé " + std::to_string(CANT_PANADEROS) 
             + " MaestrosPanaderos\n";
@@ -33,8 +39,6 @@ FabricaDePan::FabricaDePan(Logger* logger, Configuracion* config) {
     //creo al maestroPizzero
 
     //creo al delivery
-
-    //creo al recepcionista
 
 }
 
@@ -73,9 +77,17 @@ int FabricaDePan::cerrarLaFabrica() {
 FabricaDePan:: ~FabricaDePan() {
     // Logger is deleted finally by main function
 
+    for (auto pipe: pipes) {
+        delete pipe;
+    }
+
     delete maestroEspecialista;
     for(auto maestroPanadero: maestrosPanaderos) {
         delete maestroPanadero;       
+    }
+
+    for(auto recepcionista: recepcionistas) {
+        delete recepcionista;       
     }
 
 }

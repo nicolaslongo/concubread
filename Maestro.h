@@ -3,6 +3,7 @@
 
 #include "FifoLectura.h"
 #include "FifoEscritura.h"
+#include "Pipe.h"
 
 const int PARENT_PROCESS = 0;
 const int CHILD_PROCESS = 1;

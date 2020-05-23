@@ -11,7 +11,7 @@ using namespace std;
 
 #define CONFIG_FILE_FOLDER "config/"
 const int MAX_READ = 100;
-const int MIN_READ = 2;
+const int MIN_READ = 3;
 
 
 class Configuracion {
@@ -20,16 +20,18 @@ class Configuracion {
         FILE *file;
         Logger* logger;
         int cantidadMaestrosPanaderos;
+        int cantidadRecepcionistas;
         // int cantidadMaestrosPizzeros;
-        // int cantidadRecepcionistas;
         // int cantidadRepartidores;
 
         void leerConfigFile();
-
+        void leerCantidadRecepcionistas();
+        void leerCantidadMaestrosPanaderos();
     protected:
 
     public:
         int getCantidadMaestrosPanaderos();
+        int getCantidadRecepcionistas();
         Configuracion(Logger* logger);
         ~Configuracion();
 

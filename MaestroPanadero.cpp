@@ -1,10 +1,13 @@
 # include "MaestroPanadero.h"
 
-MaestroPanadero::MaestroPanadero (Logger* logger, int myId) : Maestro::Maestro(myId) {
+MaestroPanadero::MaestroPanadero (Logger* logger, int myId, Pipe* pipePedidosDePan) : Maestro::Maestro(myId) {
     this->logger = logger;
+    this->pipeLectura = pipePedidosDePan;
 }
 
 void MaestroPanadero::abrirCanalesDeComunicacion() {
+
+    this->pipeLectura->setearModo( this->pipeLectura->LECTURA );
     
     try {
         fifoLectura = new FifoLectura(std::string("./fifos/entregas_de_MM"));
@@ -92,7 +95,7 @@ int MaestroPanadero::realizarMisTareas() {
             exit(-1);
         }
 
-        std::cout << "Recibi esto " << *lectura_temporal << ". Soy" << this->getId() << endl;
+        std::cout << "Recibi esto " << *lectura_temporal << ". Soy MPan " << this->getId() << endl;
         // hornear el pan
 
         // colocarlo en la gran canasta
@@ -108,6 +111,8 @@ int MaestroPanadero::realizarMisTareas() {
 
 int MaestroPanadero::terminarJornada() {
     // Devuelvo 1 para que el proceso sepa que no soy la fabrica de pan
+
+    this->pipeLectura->cerrar();
 
     try {
         fifoEscritura->cerrar();

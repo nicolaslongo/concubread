@@ -10,6 +10,7 @@ class MaestroPanadero : public Maestro {
 
     private:
         Logger* logger;
+        Pipe* pipeLectura;
         virtual int empezarJornada();
         virtual int realizarMisTareas();
         virtual int terminarJornada();
@@ -18,7 +19,7 @@ class MaestroPanadero : public Maestro {
     protected:
 
     public:
-        MaestroPanadero(Logger* logger, int myId);
+        MaestroPanadero(Logger* logger, int myId, Pipe* pipePedidosDePan);
         ~MaestroPanadero();
         virtual int jornadaLaboral();       // capaz este esté de más
 

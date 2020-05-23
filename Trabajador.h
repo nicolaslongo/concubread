@@ -4,8 +4,8 @@
 #include "FifoLectura.h"
 #include "FifoEscritura.h"
 
-const int PARENT_PROCESS = 0;
-const int CHILD_PROCESS = 1;
+const int TODO_PARENT_PROCESS = 0;
+const int TODO_CHILD_PROCESS = 1;
 
 class Trabajador {
 

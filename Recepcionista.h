@@ -2,19 +2,19 @@
 #define RECEPCIONISTA_H_
 
 #include "Trabajador.h"
-#include "FifoLectura.h"
-#include "FifoEscritura.h"
+#include "Pipe.h"
 
 class Recepcionista : public Trabajador {
 
     private:
-        FifoEscritura* fifoEscritura;
+        Pipe* pipeEscritura;
+        Logger* logger;
 
     protected:
 
     public:
 
-        Recepcionista();
+        Recepcionista(Logger* logger, int myId, Pipe* pedidosTelefonicosDePan);
         ~Recepcionista();
         int empezarJornada();
         int jornadaLaboral();

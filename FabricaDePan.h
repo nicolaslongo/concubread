@@ -2,8 +2,10 @@
 #define FABRICADEPAN_H_
 
 #include "Pedido.h"
+#include "Pipe.h"
 #include "MaestroPanadero.h"
 #include "MaestroEspecialista.h"
+#include "Recepcionista.h"
 #include "Logger.h"
 #include "Configuracion.h"
 
@@ -22,7 +24,10 @@ class FabricaDePan {
         std::vector <MaestroPanadero*> maestrosPanaderos;
         // m maestros pizzeros
         // r recepcionistas
+        std::vector <Recepcionista*> recepcionistas;
         // d deliverys
+
+        std::vector <Pipe*> pipes;
 
     protected:
 
