@@ -1,11 +1,10 @@
 #include "FabricaDePan.h"
 
-const int CANT_PANADEROS = 3;
-
-FabricaDePan::FabricaDePan(Logger* logger) {
+FabricaDePan::FabricaDePan(Logger* logger, Configuracion* config) {
 
     // leo los pedidos de algun lado. Los levanto
     this->logger = logger;
+    this->config = config;
 
     // creo a los recepcionistas
     for (int i = 0; i < 1; i++) {
@@ -20,7 +19,8 @@ FabricaDePan::FabricaDePan(Logger* logger) {
     this->logger->unlockLogger();
 
     // creo a los maestros panaderos
-    for (int i = 1; i < CANT_PANADEROS; i++) {
+    int CANT_PANADEROS = this->config->getCantidadMaestrosPanaderos();
+    for (int i = 0; i < CANT_PANADEROS; i++) {
         maestrosPanaderos.push_back(new MaestroPanadero(logger, i));
     }
     std::string mensaje = "FabricaDePan: creé " + std::to_string(CANT_PANADEROS) 
@@ -45,7 +45,9 @@ int FabricaDePan::abrirLaFabrica() {
     if (resultado == CHILD_PROCESS) {
         return resultado;
     }
-    for (int i = 0; i < CANT_PANADEROS - 1; i++) {
+    
+    int CANT_PANADEROS = this->config->getCantidadMaestrosPanaderos();
+    for (int i = 0; i < CANT_PANADEROS; i++) {
         resultado = maestrosPanaderos.at(i)->jornadaLaboral();
         if (resultado == CHILD_PROCESS) {
             return resultado;

@@ -11,6 +11,7 @@
 /fifos
 /logfiles
 .vscode/
+/config
 
 # Precompiled Headers
 *.gch

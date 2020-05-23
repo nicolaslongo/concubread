@@ -72,10 +72,27 @@ int MaestroPanadero::realizarMisTareas() {
         // TODO: chequear esto try catchPEDIDO_MM
         int* lectura_temporal = (int*) malloc( sizeof(int*) );
 
+        try {
+            fifoLectura->lockFifo();
+        } catch(std::string& mensaje) {
+            const char* msg = mensaje.c_str();
+            this->logger->lockLogger();
+            this->logger->writeToLogFile(msg, strlen(msg));
+            this->logger->unlockLogger();
+            exit(-1);
+        }
         fifoLectura->leer( (void*) lectura_temporal, sizeof(int) );
+        try {
+            fifoLectura->unlockFifo();
+        } catch(std::string& mensaje) {
+            const char* msg = mensaje.c_str();
+            this->logger->lockLogger();
+            this->logger->writeToLogFile(msg, strlen(msg));
+            this->logger->unlockLogger();
+            exit(-1);
+        }
 
         std::cout << "Recibi esto " << *lectura_temporal << ". Soy" << this->getId() << endl;
-
         // hornear el pan
 
         // colocarlo en la gran canasta

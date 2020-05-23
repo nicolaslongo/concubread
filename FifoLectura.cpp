@@ -2,6 +2,11 @@
 
 FifoLectura::FifoLectura(const std::string nombre) : Fifo(nombre) {
 
+	// this->fl.l_type = F_WRLCK;
+	// this->fl.l_whence = SEEK_SET;
+	// this->fl.l_start = 0;
+	// this->fl.l_len = 0;
+
 }
 
 FifoLectura::~FifoLectura() {
@@ -18,7 +23,9 @@ void FifoLectura::abrir() {
 	}
 }
 
+
 ssize_t FifoLectura::leer(void* buffer,const ssize_t buffsize) const {
+
 	int resultado = read ( fd,buffer,buffsize );
 	if(resultado == -1) {
 		std::string mensaje = std::string("FifoLectura:Error in read(): ") 

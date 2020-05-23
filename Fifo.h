@@ -5,6 +5,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/file.h>
 #include <fcntl.h>
 #include <unistd.h>
 
@@ -19,6 +20,10 @@ public:
 	virtual void abrir() = 0;
 	void cerrar();
 	void eliminar() const;
+
+	int lockFifo();
+	int unlockFifo();
+
 
 protected:
 	std::string nombre;

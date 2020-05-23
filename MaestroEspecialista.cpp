@@ -65,14 +65,13 @@ int MaestroEspecialista::realizarMisTareas() {
     char* lectura_temporal = (char*) malloc( strlen(PEDIDO_MM) * sizeof(char*) );
     memset(lectura_temporal, 0, strlen(PEDIDO_MM) * sizeof(char*));
 
-    while(iterations < 10) {
+    while(iterations < 5) {
         // alimentar la masa madre
         alimentarMasaMadre(masaMadre.size());
         int gramaje = masaMadre.at(iterations)->getGramaje();
         std::string mensaje = "MaestroEspecialista: nueva ración de " + std::to_string(gramaje)
          + " gramos.\n";
         const char* msg = mensaje.c_str();
-
         this->logger->lockLogger();
         this->logger->writeToLogFile(msg, strlen(msg));
         this->logger->unlockLogger();

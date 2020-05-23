@@ -5,6 +5,7 @@
 #include "MaestroPanadero.h"
 #include "MaestroEspecialista.h"
 #include "Logger.h"
+#include "Configuracion.h"
 
 #include <sched.h>
 #include <sys/wait.h>   // wait syscall
@@ -14,6 +15,7 @@ class FabricaDePan {
 
     private:
         Logger* logger;
+        Configuracion* config;
         // 1 maestro especialista
         MaestroEspecialista* maestroEspecialista;
         // n maestros de pan
@@ -26,7 +28,7 @@ class FabricaDePan {
 
     public:
         std::vector<Pedido> pedidos;
-        FabricaDePan(Logger* logger);
+        FabricaDePan(Logger* logger, Configuracion* config);
         ~FabricaDePan();
         int abrirLaFabrica();
         int cerrarLaFabrica();
