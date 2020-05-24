@@ -21,6 +21,10 @@ class MaestroPanadero : public Trabajador {
         virtual int terminarJornada();
         virtual void abrirCanalesDeComunicacion();
 
+        bool buscarUnPedidoNuevo();
+        int* pedirNuevaRacionDeMasaMadre();
+        void hornear();
+        
     protected:
 
     public:

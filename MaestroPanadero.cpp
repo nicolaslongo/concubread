@@ -66,106 +66,99 @@ int MaestroPanadero::jornadaLaboral() {
 int MaestroPanadero::realizarMisTareas() {
 
     // Acá va la variable que modificaremos usando SIGNALS
-    // bool keep_looping = true;
     int iterations = 0;
     while( this->noEsHoraDeIrse() ) {
 
-        char* lectura_pedido = (char*) malloc( strlen(PEDIDO_PAN) * sizeof(char*) );
-        memset(lectura_pedido, 0, strlen(PEDIDO_PAN) * sizeof(char*));
+        bool hayNuevoPedido = buscarUnPedidoNuevo();
 
-        std::cout << "Estoy por leer un pedido " << endl;
-        try {
-            pipeLectura->lockPipe();
-        } catch(std::string& mensaje) {
-            const char* msg = mensaje.c_str();
-            this->logger->lockLogger();
-            this->logger->writeToLogFile(msg, strlen(msg));
-            this->logger->unlockLogger();
-            exit(-1);
-        }
-        pipeLectura->leer((void*) lectura_pedido, strlen(PEDIDO_PAN));
-        try {
-            pipeLectura->unlockPipe();
-        } catch(std::string& mensaje) {
-            const char* msg = mensaje.c_str();
-            this->logger->lockLogger();
-            this->logger->writeToLogFile(msg, strlen(msg));
-            this->logger->unlockLogger();
-            exit(-1);
-        }
-
-        // if(!this->noEsHoraDeIrse()){
-        //     free(lectura_pedido);
-        //     return CHILD_PROCESS;
-        // }
-
-        if(*lectura_pedido == EOF) {
-            std::string mensaje = "MaestroPanadero " + std::to_string(this->getId()) + ": recibí esto: " 
-                + std::string(lectura_pedido);
-            const char* msg = mensaje.c_str();
-            this->logger->lockLogger();
-            this->logger->writeToLogFile(msg, strlen(msg));
-            this->logger->unlockLogger();
-            free(lectura_pedido);
-            continue;
-        }
-
-
-        free(lectura_pedido);
-        // Una vez que haya leído un pedido.. ahí lo pido. Antes, no
-        // std::cout << "Leí un pedido " << endl;
-
-        // TODO: chequear esto try catch
-        fifoEscritura->escribir( (const void*) PEDIDO_MM, strlen(PEDIDO_MM));
-
-        // recibir la masa madre por el FIFO
-        // TODO: chequear esto try catchPEDIDO_MM
-        int* lectura_temporal = (int*) malloc( sizeof(int*) );
-
-        try {
-            fifoLectura->lockFifo();
-        } catch(std::string& mensaje) {
-            const char* msg = mensaje.c_str();
-            this->logger->lockLogger();
-            this->logger->writeToLogFile(msg, strlen(msg));
-            this->logger->unlockLogger();
-            exit(-1);
-        }
-        fifoLectura->leer( (void*) lectura_temporal, sizeof(int) );
-        try {
-            fifoLectura->unlockFifo();
-        } catch(std::string& mensaje) {
-            const char* msg = mensaje.c_str();
-            this->logger->lockLogger();
-            this->logger->writeToLogFile(msg, strlen(msg));
-            this->logger->unlockLogger();
-            exit(-1);
-        }
-
-        if(!this->noEsHoraDeIrse()){
+        if (hayNuevoPedido) {
+            int* lectura_temporal = pedirNuevaRacionDeMasaMadre();
+            if( !this->noEsHoraDeIrse() ){
+                free(lectura_temporal);
+                return CHILD_PROCESS;
+            }
             free(lectura_temporal);
-            return CHILD_PROCESS;
+            hornear();
+            //colocar en la gran canasta
         }
-
-        std::string mensaje_recib =  "Soy MaestroPanadero " + std::to_string(this->getId()) +
-            ". Tengo un pedido de pan y para ello recibí " + std::to_string(*lectura_temporal) +
-            " gramos de Masa Madre, procedo a hornearlo.\n";
-        std::cout << mensaje_recib;
-        const char* recibido = mensaje_recib.c_str();
-        this->logger->lockLogger();
-        this->logger->writeToLogFile(recibido, strlen(recibido));
-        this->logger->unlockLogger();
-
-        // colocarlo en la gran canasta
-        free(lectura_temporal);
         iterations++;
     }
     return CHILD_PROCESS;
 
 }
 
+void MaestroPanadero::hornear() {
+    sleep(0.5);
+}
+
+int* MaestroPanadero::pedirNuevaRacionDeMasaMadre() {
+
+    // TODO: chequear esto try catch
+    fifoEscritura->escribir( (const void*) PEDIDO_MM, strlen(PEDIDO_MM));
+
+    int* lectura_temporal = (int*) malloc( sizeof(int*) );
+    try {
+        fifoLectura->lockFifo();
+    } catch(std::string& mensaje) {
+        const char* msg = mensaje.c_str();
+        this->logger->lockLogger();
+        this->logger->writeToLogFile(msg, strlen(msg));
+        this->logger->unlockLogger();
+        exit(-1);
+    }
+    fifoLectura->leer( (void*) lectura_temporal, sizeof(int) );
+    try {
+        fifoLectura->unlockFifo();
+    } catch(std::string& mensaje) {
+        const char* msg = mensaje.c_str();
+        this->logger->lockLogger();
+        this->logger->writeToLogFile(msg, strlen(msg));
+        this->logger->unlockLogger();
+        exit(-1);
+    }
+
+    std::string mensaje_recib =  "Soy MaestroPanadero " + std::to_string(this->getId()) +
+        ". Tengo un pedido de pan y para ello recibí " + std::to_string(*lectura_temporal) +
+        " gramos de Masa Madre, procedo a hornearlo.\n";
+    std::cout << mensaje_recib;
+    const char* recibido = mensaje_recib.c_str();
+    this->logger->lockLogger();
+    this->logger->writeToLogFile(recibido, strlen(recibido));
+    this->logger->unlockLogger();
+    return lectura_temporal;
+
+}
+
+bool MaestroPanadero::buscarUnPedidoNuevo() {
+    char* lectura_pedido = (char*) malloc( strlen(PEDIDO_PAN) * sizeof(char*) );
+    memset(lectura_pedido, 0, strlen(PEDIDO_PAN) * sizeof(char*));
+
+    try {
+        pipeLectura->lockPipe();
+    } catch(std::string& mensaje) {
+        const char* msg = mensaje.c_str();
+        this->logger->lockLogger();
+        this->logger->writeToLogFile(msg, strlen(msg));
+        this->logger->unlockLogger();
+        exit(-1);
+    }
+    pipeLectura->leer((void*) lectura_pedido, strlen(PEDIDO_PAN));
+    try {
+        pipeLectura->unlockPipe();
+    } catch(std::string& mensaje) {
+        const char* msg = mensaje.c_str();
+        this->logger->lockLogger();
+        this->logger->writeToLogFile(msg, strlen(msg));
+        this->logger->unlockLogger();
+        exit(-1);
+    }
+
+    bool igualdad = (strcmp(lectura_pedido, PEDIDO_PAN) == 0);
+    free(lectura_pedido);
+    return igualdad;
+}
+
 int MaestroPanadero::terminarJornada() {
-    // Devuelvo 1 para que el proceso sepa que no soy la fabrica de pan
 
     this->pipeLectura->cerrar();
 

@@ -33,6 +33,9 @@ class MaestroEspecialista : public Trabajador {
         virtual int terminarJornada();
         virtual void abrirCanalesDeComunicacion();
 
+        bool buscarUnPedidoNuevo();
+        void enviarRacionDeMasaMadre();
+        bool lecturaEstaPermitida();
     protected:
 
     public:

@@ -25,7 +25,7 @@ class SIGABRT_Handler : public EventHandler {
 			return 0;
 		}
 
-		sig_atomic_t getGracefulQuit () const {
+		sig_atomic_t getReadingForbidden () const {
 			return this->readingForbidden;
 		}
 

@@ -4,6 +4,10 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <string>
+#include <sys/file.h>
+
+const char* const READ_MODE = "r";
+const char* const WRITE_MODE = "w";
 
 class LockFile {
 
@@ -19,7 +23,8 @@ public:
 	LockFile ( const std::string nombre, const char* mode );
 	~LockFile();
 
-	int tomarLock ();
+	int tomarLockEscritura();
+	int tomarLockLectura();
 	int liberarLock ();
 	ssize_t escribir ( const void* buffer,const ssize_t buffsize ) const;
 	ssize_t leer ( void* buffer,const ssize_t buffsize );

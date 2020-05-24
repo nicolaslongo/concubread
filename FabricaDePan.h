@@ -1,9 +1,9 @@
 #ifndef FABRICADEPAN_H_
 #define FABRICADEPAN_H_
 
-#include "Pedido.h"
 #include "Pipe.h"
 #include "MaestroPanadero.h"
+#include "MaestroPizzero.h"
 #include "MaestroEspecialista.h"
 #include "Recepcionista.h"
 #include "Logger.h"
@@ -17,22 +17,30 @@ class FabricaDePan {
 
     private:
         Logger* logger;
+        Pipe* listaDePedidos;
         Configuracion* config;
+
         // 1 maestro especialista
         MaestroEspecialista* maestroEspecialista;
+
         // n maestros de pan
         std::vector <MaestroPanadero*> maestrosPanaderos;
+
         // m maestros pizzeros
+        std::vector <MaestroPizzero*> maestrosPizzeros;
+
         // r recepcionistas
         std::vector <Recepcionista*> recepcionistas;
+
         // d deliverys
 
         std::vector <Pipe*> pipes;
 
+        void despacharPedidosALaListaDePedidos();
+
     protected:
 
     public:
-        std::vector<Pedido> pedidos;
         FabricaDePan(Logger* logger, Configuracion* config);
         ~FabricaDePan();
         int abrirLaFabrica();
