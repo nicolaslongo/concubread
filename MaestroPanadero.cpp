@@ -1,7 +1,6 @@
 # include "MaestroPanadero.h"
 
-MaestroPanadero::MaestroPanadero (Logger* logger, int myId, Pipe* pipePedidosDePan) : Maestro::Maestro(myId) {
-    this->logger = logger;
+MaestroPanadero::MaestroPanadero (Logger* logger, int myId, Pipe* pipePedidosDePan) : Trabajador::Trabajador(logger, myId) {
     this->pipeLectura = pipePedidosDePan;
 }
 
@@ -69,7 +68,7 @@ int MaestroPanadero::realizarMisTareas() {
     // Acá va la variable que modificaremos usando SIGNALS
     // bool keep_looping = true;
     int iterations = 0;
-    while(iterations < 2) {
+    while( this->noEsHoraDeIrse() ) {
 
         char* lectura_pedido = (char*) malloc( strlen(PEDIDO_PAN) * sizeof(char*) );
         memset(lectura_pedido, 0, strlen(PEDIDO_PAN) * sizeof(char*));

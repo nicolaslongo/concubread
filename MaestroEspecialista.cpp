@@ -1,7 +1,6 @@
 # include "MaestroEspecialista.h"
 
-MaestroEspecialista::MaestroEspecialista (Logger* logger, int myId) : Maestro::Maestro(myId) {
-    this->logger = logger;
+MaestroEspecialista::MaestroEspecialista (Logger* logger, int myId) : Trabajador::Trabajador(logger, myId) {
 }
 
 void MaestroEspecialista::abrirCanalesDeComunicacion() {
@@ -26,6 +25,11 @@ void MaestroEspecialista::abrirCanalesDeComunicacion() {
         this->logger->unlockLogger();
         exit(-1);
     }
+
+    // TODO: encapsular? No sé si esto está haciendo la diferencia!
+	SIGABRT_Handler* sigabrt_handler = new SIGABRT_Handler();
+    this->sigabrt_handler = sigabrt_handler;
+	SignalHandler :: getInstance()->registrarHandler (SIGABRT, sigabrt_handler);	
 
     const char* mensaje = "MaestroEspecialista: abrí los fifos <entregas_de_MM> y <pedidos_de_MM>\n";
     this->logger->lockLogger();
@@ -65,7 +69,7 @@ int MaestroEspecialista::realizarMisTareas() {
     char* lectura_temporal = (char*) malloc( strlen(PEDIDO_MM) * sizeof(char*) );
     memset(lectura_temporal, 0, strlen(PEDIDO_MM) * sizeof(char*));
 
-    while(iterations < 4) {
+    while( this->noEsHoraDeIrse() ) {
         // alimentar la masa madre
         alimentarMasaMadre(masaMadre.size());
         int gramaje = masaMadre.at(iterations)->getGramaje();

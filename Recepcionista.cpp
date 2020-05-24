@@ -1,9 +1,8 @@
 # include "Recepcionista.h"
 
-Recepcionista::Recepcionista(Logger* logger, int myId, Pipe* pedidosTelefonicosDePan) : Trabajador::Trabajador() {
+Recepcionista::Recepcionista(Logger* logger, int myId, Pipe* pedidosTelefonicosDePan) : Trabajador::Trabajador(logger, myId) {
 
     this->pipeEscritura = pedidosTelefonicosDePan;
-    this->logger = logger;
 
 }
 
@@ -12,7 +11,7 @@ int Recepcionista::jornadaLaboral() {
     int pid = fork();
     if (pid != 0) {
         // Parent process. La Fabrica debe volver a su hilo
-        return TODO_PARENT_PROCESS;
+        return PARENT_PROCESS;
     }
     // Child process. This is going to continue running from here
 
@@ -42,11 +41,6 @@ void Recepcionista::abrirCanalesDeComunicacion() {
     this->logger->lockLogger();
     this->logger->writeToLogFile(msg, strlen(msg));
     this->logger->unlockLogger();
-
-	SIGINT_Handler* sigint_handler = new SIGINT_Handler();
-    this->sigint_handler = sigint_handler;
-	SignalHandler :: getInstance()->registrarHandler (SIGINT, sigint_handler);
-
 }
 
 int Recepcionista::realizarMisTareas() {
@@ -54,7 +48,7 @@ int Recepcionista::realizarMisTareas() {
 
     int ITERATIONS = 0;
 
-    while(this->sigint_handler->getGracefulQuit() == 0) {
+    while( this->noEsHoraDeIrse() ) {
 
         if (ITERATIONS < 4) {
 
@@ -75,22 +69,20 @@ int Recepcionista::realizarMisTareas() {
     this->logger->writeToLogFile(exit_msg, strlen(exit_msg));
     this->logger->unlockLogger();
 
-    return TODO_CHILD_PROCESS;
+    return CHILD_PROCESS;
 }
 
 int Recepcionista::terminarJornada() {
 
     // limpieza de coso
     this->pipeEscritura->cerrar();
-    delete this->sigint_handler;
-    SignalHandler::destruir();
-    return TODO_CHILD_PROCESS;
+    return CHILD_PROCESS;
 }
 
 // TODO: no lo estoy usando
 int Recepcionista::empezarJornada() {
     // Este no lo estoy usando
-    return TODO_CHILD_PROCESS;
+    return CHILD_PROCESS;
 }
 
 Recepcionista::~Recepcionista() {

@@ -17,9 +17,16 @@ FabricaDePan::FabricaDePan(Logger* logger, Configuracion* config) {
         this->recepcionistas.push_back(new Recepcionista(logger, i, pedidosTelefonicosDePan));
     }
     
+    std::string mensaje = "FabricaDePan: creé " + std::to_string(CANT_RECEPCIONISTAS) 
+            + " MaestrosPanaderos\n";
+    const char* msg = mensaje.c_str();
+    this->logger->lockLogger();
+    this->logger->writeToLogFile(msg, strlen(msg));
+    this->logger->unlockLogger();
+
     // creo al maestroEspecialista
     maestroEspecialista = new MaestroEspecialista(logger, 0);
-    const char* msg = "FabricaDePan: MaestroEspecialista creado\n";
+    msg = "FabricaDePan: MaestroEspecialista creado\n";
     this->logger->lockLogger();
     this->logger->writeToLogFile(msg, strlen(msg));
     this->logger->unlockLogger();
@@ -29,7 +36,7 @@ FabricaDePan::FabricaDePan(Logger* logger, Configuracion* config) {
     for (int i = 0; i < CANT_PANADEROS; i++) {
         maestrosPanaderos.push_back(new MaestroPanadero(logger, i, pedidosTelefonicosDePan));
     }
-    std::string mensaje = "FabricaDePan: creé " + std::to_string(CANT_PANADEROS) 
+    mensaje = "FabricaDePan: creé " + std::to_string(CANT_PANADEROS) 
             + " MaestrosPanaderos\n";
     msg = mensaje.c_str();
     this->logger->lockLogger();
@@ -65,6 +72,12 @@ int FabricaDePan::abrirLaFabrica() {
             return resultado;
         }
     }
+
+    std::string mensaje = "FabricaDePan: ya están todos laburando\n";
+    const char* msg = mensaje.c_str();
+    this->logger->lockLogger();
+    this->logger->writeToLogFile(msg, strlen(msg));
+    this->logger->unlockLogger();
 
     // same para cada proceso
     return PARENT_PROCESS;

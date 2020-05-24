@@ -1,18 +1,24 @@
 #ifndef MAESTROESPECIALISTA_H_
 #define MAESTROESPECIALISTA_H_
 
-#include "Maestro.h"
+#include "Trabajador.h"
+#include "FifoLectura.h"
+#include "FifoEscritura.h"
 #include "MasaMadre.h"
-#include "Logger.h"
+#include "SIGABRT_Handler.h"
 
 #include <iostream>
 #include <unistd.h>
 #include <vector>
 
-class MaestroEspecialista : public Maestro {
+class MaestroEspecialista : public Trabajador {
 
     private:
-        Logger* logger;
+
+        FifoLectura* fifoLectura;
+        FifoEscritura* fifoEscritura;
+        SIGABRT_Handler* sigabrt_handler;
+
         std::vector <MasaMadre*> masaMadre;
         int racionesConsumidas = 0;
         
