@@ -20,8 +20,7 @@ int main() {
     }
 
     // espero a que trabajen
-    while (true) { }
-
+    // sleep(40);
     // cierro la fabrica
     fabrica->cerrarLaFabrica();
     delete fabrica;

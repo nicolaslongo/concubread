@@ -38,13 +38,6 @@ void Logger::closeFileInThisScope() {
 }
 
 
-// void Logger::writeToLogFile(std::string msg) {
-//     if(file.is_open()) {
-//         file << msg + "\n";
-//         file.flush();
-//     }
-// }
-
 Logger::~Logger() {
 	close(this->fd);
 }

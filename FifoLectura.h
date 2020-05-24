@@ -3,6 +3,8 @@
 
 #include "Fifo.h"
 
+#include <iostream>
+
 class FifoLectura : public Fifo {
 
 	private:

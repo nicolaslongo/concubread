@@ -24,8 +24,7 @@ void Fifo::eliminar() const {
 }
 
 int Fifo::lockFifo() {
-	// this->fl.l_type = F_WRLCK;
-	// int resultado_lock = fcntl ( this->fd,F_SETLKW,&(this->fl) );
+
 	int resultado_lock = flock(this->fd, LOCK_EX);
 	if (resultado_lock == -1) {
 		throw "Error lockeando un Fifo. Este es mi fd " + std::to_string(this->fd);
@@ -34,8 +33,7 @@ int Fifo::lockFifo() {
 }
 
 int Fifo::unlockFifo() {
-	// this->fl.l_type = F_UNLCK;
-	// int resultado_lock = fcntl ( this->fd,F_SETLK,&(this->fl) );
+
 	int resultado_lock = flock(this->fd, LOCK_UN);
 	if (resultado_lock == -1) {
 		throw "Error deslockeando un Fifo. Este es mi fd " + std::to_string(this->fd);
