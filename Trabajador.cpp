@@ -3,8 +3,7 @@
 Trabajador::Trabajador(Logger* logger, int myId) {
     this->logger = logger;
     this->id = myId;
-
-    crearHandlerParaSIGINT();
+    this->sigint_handler = NULL;
 }
 
 void Trabajador::crearHandlerParaSIGINT() {
@@ -22,6 +21,4 @@ int Trabajador::getId() {
 }
 
 Trabajador::~Trabajador() {
-    delete this->sigint_handler;
-    SignalHandler::destruir();
 }

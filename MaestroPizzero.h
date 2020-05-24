@@ -9,26 +9,29 @@
 #include <unistd.h>
 #include <iostream>
 
+const int TIEMPO_COCCION_ESTANDAR_PIZZA = 2;
+
 class MaestroPizzero : public Trabajador {
 
     private:
-        FifoLectura* fifoLectura;
-        FifoEscritura* fifoEscritura;
-        Pipe* pipeLectura;
+        Pipe* pedidosMasaMadre;
+        Pipe* entregasMasaMadre;
+        Pipe* pipePedidosDePizza;
 
-        virtual int empezarJornada();
         virtual int realizarMisTareas();
         virtual int terminarJornada();
         virtual void abrirCanalesDeComunicacion();
 
         bool buscarUnPedidoNuevo();
         int* pedirNuevaRacionDeMasaMadre();
-        void hornear();
+        void hornear(int gramajeMasaMadre);
+        int definirTiempoDeCoccion(unsigned int seedNumber);
         
     protected:
 
     public:
-        MaestroPizzero(Logger* logger, int myId, Pipe* pipePedidosDePizza);
+        MaestroPizzero(Logger* logger, int myId, Pipe* pipePedidosDePizza, Pipe* pedidosMasaMadre,
+                                                Pipe* entregasMasaMadre);
         ~MaestroPizzero();
         virtual int jornadaLaboral();       // capaz este esté de más
 

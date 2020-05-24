@@ -1,34 +1,19 @@
 # include "MaestroPizzero.h"
 
-MaestroPizzero::MaestroPizzero (Logger* logger, int myId, Pipe* pipePedidosDePizza) : Trabajador::Trabajador(logger, myId) {
-    this->pipeLectura = pipePedidosDePizza;
+MaestroPizzero::MaestroPizzero (Logger* logger, int myId, Pipe* pipePedidosDePizza,
+            Pipe* pipePedidosMasaMadre, Pipe* pipeEntregasMasaMadre) : Trabajador::Trabajador(logger, myId) {
+
+    this->pipePedidosDePizza = pipePedidosDePizza;
+    this->pedidosMasaMadre = pipePedidosMasaMadre;
+    this->entregasMasaMadre = pipeEntregasMasaMadre;
 }
 
 void MaestroPizzero::abrirCanalesDeComunicacion() {
 
-    this->pipeLectura->setearModo( this->pipeLectura->LECTURA );
-    
-    try {
-        fifoLectura = new FifoLectura(std::string("./fifos/entregas_de_MM"));
-        fifoLectura->abrir();
+    this->pipePedidosDePizza->setearModo( this->pipePedidosDePizza->LECTURA );
+    this->entregasMasaMadre->setearModo( this->entregasMasaMadre->LECTURA );
+    this->pedidosMasaMadre->setearModo( this->pedidosMasaMadre->ESCRITURA );
 
-    } catch ( std::string& mensaje ) {
-        const char* msg = mensaje.c_str();
-        this->logger->lockLogger();
-        this->logger->writeToLogFile(msg, strlen(msg));
-        this->logger->unlockLogger();
-        exit(-1);
-    }
-    try {
-        fifoEscritura = new FifoEscritura(std::string("./fifos/pedidos_de_MM"));
-        fifoEscritura->abrir();
-    } catch ( std::string& mensaje ) {
-        const char* msg = mensaje.c_str();
-        this->logger->lockLogger();
-        this->logger->writeToLogFile(msg, strlen(msg));
-        this->logger->unlockLogger();
-        exit(-1);
-    }
 
     std::string std_msg = "MaestroPizzero " + std::to_string(this->getId()) + 
         ": abrí los fifos <entregas_de_MM> y <pedidos_de_MM> y también el Pipe para recibir pedidos de pizza\n";
@@ -48,6 +33,9 @@ int MaestroPizzero::jornadaLaboral() {
         return PARENT_PROCESS;
     }
     // Child process. This is going to continue running from here
+
+    this->crearHandlerParaSIGINT();
+
     abrirCanalesDeComunicacion();
     // realizar mis tareas
     int resultado = realizarMisTareas();
@@ -66,7 +54,6 @@ int MaestroPizzero::jornadaLaboral() {
 int MaestroPizzero::realizarMisTareas() {
 
     // Acá va la variable que modificaremos usando SIGNALS
-    int iterations = 0;
     while( this->noEsHoraDeIrse() ) {
 
         bool hayNuevoPedido = buscarUnPedidoNuevo();
@@ -77,28 +64,63 @@ int MaestroPizzero::realizarMisTareas() {
                 free(lectura_temporal);
                 return CHILD_PROCESS;
             }
+            hornear(*lectura_temporal);
             free(lectura_temporal);
-            hornear();
             //colocar en la gran canasta
         }
-        iterations++;
     }
+
+    std::string mensaje = "MaestroPizzero " + std::to_string(this->getId()) +
+            ": recibí SIGINT y ya no trabajo más.\n";
+    const char* exit_msg = mensaje.c_str();
+    this->logger->lockLogger();
+    this->logger->writeToLogFile(exit_msg, strlen(exit_msg));
+    this->logger->unlockLogger();
     return CHILD_PROCESS;
 
 }
 
-void MaestroPizzero::hornear() {
-    sleep(2);
+void MaestroPizzero::hornear(int gramajeMasaMadre) {
+
+    int tiempoDeCoccion = definirTiempoDeCoccion( (unsigned int) gramajeMasaMadre );
+    sleep(tiempoDeCoccion);
+    std::string mensaje = "MaestroPizzero " + std::to_string(this->getId()) +
+            " el tiempo de cocción de ésta pizza fue de " + std::to_string(tiempoDeCoccion) +
+            " segundos.\n";
+    const char* msg = mensaje.c_str();
+    this->logger->lockLogger();
+    this->logger->writeToLogFile(msg, strlen(msg));
+    this->logger->unlockLogger();
 }
+
+int MaestroPizzero::definirTiempoDeCoccion(unsigned int seedNumber) {
+
+    // I also use current time to bias seed_number
+    std::srand(seedNumber * std::time(0));
+    // TODO: definir estas constantes
+    int desvio = 1 + (int) (20.0 * std::rand()/(RAND_MAX+1.0) ) + 10;
+
+    if (desvio % 3 == 0) {
+        return (TIEMPO_COCCION_ESTANDAR_PIZZA + 1);
+    }
+    else if (desvio % 3 == 1) {
+        return (TIEMPO_COCCION_ESTANDAR_PIZZA - 1);
+    }
+    else {
+        return (TIEMPO_COCCION_ESTANDAR_PIZZA + 0);
+
+    }
+}
+
 
 int* MaestroPizzero::pedirNuevaRacionDeMasaMadre() {
 
     // TODO: chequear esto try catch
-    fifoEscritura->escribir( (const void*) PEDIDO_MM, strlen(PEDIDO_MM));
+    this->pedidosMasaMadre->escribir( (const void*) PEDIDO_MM, strlen(PEDIDO_MM));
 
     int* lectura_temporal = (int*) malloc( sizeof(int*) );
     try {
-        fifoLectura->lockFifo();
+        this->entregasMasaMadre->lockPipe();
     } catch(std::string& mensaje) {
         const char* msg = mensaje.c_str();
         this->logger->lockLogger();
@@ -106,9 +128,9 @@ int* MaestroPizzero::pedirNuevaRacionDeMasaMadre() {
         this->logger->unlockLogger();
         exit(-1);
     }
-    fifoLectura->leer( (void*) lectura_temporal, sizeof(int) );
+    this->entregasMasaMadre->leer( (void*) lectura_temporal, sizeof(int) );
     try {
-        fifoLectura->unlockFifo();
+        this->entregasMasaMadre->unlockPipe();
     } catch(std::string& mensaje) {
         const char* msg = mensaje.c_str();
         this->logger->lockLogger();
@@ -117,7 +139,7 @@ int* MaestroPizzero::pedirNuevaRacionDeMasaMadre() {
         exit(-1);
     }
 
-    std::string mensaje_recib =  "Soy MaestroPizzero " + std::to_string(this->getId()) +
+    std::string mensaje_recib =  "MaestroPizzero " + std::to_string(this->getId()) +
         ". Tengo un pedido de pizza y para ello recibí " + std::to_string(*lectura_temporal) +
         " gramos de Masa Madre, procedo a hornearlo.\n";
     std::cout << mensaje_recib;
@@ -134,7 +156,7 @@ bool MaestroPizzero::buscarUnPedidoNuevo() {
     memset(lectura_pedido, 0, strlen(PEDIDO_PIZZA) * sizeof(char*));
 
     try {
-        pipeLectura->lockPipe();
+        this->pipePedidosDePizza->lockPipe();
     } catch(std::string& mensaje) {
         const char* msg = mensaje.c_str();
         this->logger->lockLogger();
@@ -142,9 +164,9 @@ bool MaestroPizzero::buscarUnPedidoNuevo() {
         this->logger->unlockLogger();
         exit(-1);
     }
-    pipeLectura->leer((void*) lectura_pedido, strlen(PEDIDO_PIZZA));
+    this->pipePedidosDePizza->leer((void*) lectura_pedido, strlen(PEDIDO_PIZZA));
     try {
-        pipeLectura->unlockPipe();
+        this->pipePedidosDePizza->unlockPipe();
     } catch(std::string& mensaje) {
         const char* msg = mensaje.c_str();
         this->logger->lockLogger();
@@ -160,39 +182,17 @@ bool MaestroPizzero::buscarUnPedidoNuevo() {
 
 int MaestroPizzero::terminarJornada() {
 
-    this->pipeLectura->cerrar();
+    this->pipePedidosDePizza->cerrar();
 
-    try {
-        fifoEscritura->cerrar();
-    } catch ( std::string& mensaje ) {
-        const char* msg = mensaje.c_str();
-        this->logger->lockLogger();
-        this->logger->writeToLogFile(msg, strlen(msg));
-        this->logger->unlockLogger();
-        exit(-1);
-    }
-    delete fifoEscritura;
+    this->entregasMasaMadre->cerrar();
 
-    try {
-        fifoLectura->cerrar();
-    } catch ( std::string& mensaje ) {
-        const char* msg = mensaje.c_str();
-        this->logger->lockLogger();
-        this->logger->writeToLogFile(msg, strlen(msg));
-        this->logger->unlockLogger();
-        exit(-1);
-    }
-    delete fifoLectura;
+    this->pedidosMasaMadre->cerrar();
 
-    return CHILD_PROCESS;
-}
 
-// TODO: borrar this right now
-int MaestroPizzero::empezarJornada() {
     return CHILD_PROCESS;
 }
 
 MaestroPizzero::~MaestroPizzero() {
-
-    
+    delete this->sigint_handler;
+    SignalHandler::destruir();
 }

@@ -8,8 +8,10 @@ SignalHandler :: SignalHandler () {
 
 SignalHandler* SignalHandler :: getInstance () {
 
-	if ( instance == NULL )
+	if ( instance == NULL ) {
+		// std::cout << "Creo al signal handler" << std::endl;
 		instance = new SignalHandler ();
+	}
 
 	return instance;
 }

@@ -17,7 +17,6 @@ const char* const PEDIDO_MM = "Solicito una ración de Masa Madre al compañero 
 class Trabajador {
 
     private:
-        void crearHandlerParaSIGINT();
         
     protected:
         Logger* logger;
@@ -31,7 +30,7 @@ class Trabajador {
 
         Trabajador(Logger* logger, int myId);
         virtual ~Trabajador();
-        virtual int empezarJornada() = 0;
+        void crearHandlerParaSIGINT();
         virtual int jornadaLaboral() = 0;
         virtual int realizarMisTareas() = 0;
         virtual int terminarJornada() = 0;
