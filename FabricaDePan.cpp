@@ -18,7 +18,7 @@ FabricaDePan::FabricaDePan(Logger* logger, Configuracion* config) {
     }
     
     std::string mensaje = "FabricaDePan: creé " + std::to_string(CANT_RECEPCIONISTAS) 
-            + " MaestrosPanaderos\n";
+            + " Recepcionistas\n";
     const char* msg = mensaje.c_str();
     this->logger->lockLogger();
     this->logger->writeToLogFile(msg, strlen(msg));

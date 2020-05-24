@@ -73,6 +73,7 @@ int MaestroPanadero::realizarMisTareas() {
         char* lectura_pedido = (char*) malloc( strlen(PEDIDO_PAN) * sizeof(char*) );
         memset(lectura_pedido, 0, strlen(PEDIDO_PAN) * sizeof(char*));
 
+        std::cout << "Estoy por leer un pedido " << endl;
         try {
             pipeLectura->lockPipe();
         } catch(std::string& mensaje) {
@@ -82,9 +83,6 @@ int MaestroPanadero::realizarMisTareas() {
             this->logger->unlockLogger();
             exit(-1);
         }
-        std::cout << "Estoy por leer un pedido " << endl;
-
-
         pipeLectura->leer((void*) lectura_pedido, strlen(PEDIDO_PAN));
         try {
             pipeLectura->unlockPipe();
@@ -96,11 +94,22 @@ int MaestroPanadero::realizarMisTareas() {
             exit(-1);
         }
 
-        // std::string mensaje = "MaestroPanadero: recibí esto: " + std::string(lectura_pedido);
-        // const char* msg = mensaje.c_str();
-        // this->logger->lockLogger();
-        // this->logger->writeToLogFile(msg, strlen(msg));
-        // this->logger->unlockLogger();
+        // if(!this->noEsHoraDeIrse()){
+        //     free(lectura_pedido);
+        //     return CHILD_PROCESS;
+        // }
+
+        if(*lectura_pedido == EOF) {
+            std::string mensaje = "MaestroPanadero " + std::to_string(this->getId()) + ": recibí esto: " 
+                + std::string(lectura_pedido);
+            const char* msg = mensaje.c_str();
+            this->logger->lockLogger();
+            this->logger->writeToLogFile(msg, strlen(msg));
+            this->logger->unlockLogger();
+            free(lectura_pedido);
+            continue;
+        }
+
 
         free(lectura_pedido);
         // Una vez que haya leído un pedido.. ahí lo pido. Antes, no
@@ -133,6 +142,11 @@ int MaestroPanadero::realizarMisTareas() {
             exit(-1);
         }
 
+        if(!this->noEsHoraDeIrse()){
+            free(lectura_temporal);
+            return CHILD_PROCESS;
+        }
+
         std::string mensaje_recib =  "Soy MaestroPanadero " + std::to_string(this->getId()) +
             ". Tengo un pedido de pan y para ello recibí " + std::to_string(*lectura_temporal) +
             " gramos de Masa Madre, procedo a hornearlo.\n";
@@ -145,7 +159,6 @@ int MaestroPanadero::realizarMisTareas() {
         // colocarlo en la gran canasta
         free(lectura_temporal);
         iterations++;
-
     }
     return CHILD_PROCESS;
 

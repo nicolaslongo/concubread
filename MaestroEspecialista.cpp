@@ -85,7 +85,7 @@ int MaestroEspecialista::realizarMisTareas() {
         if(*lectura_temporal == EOF) {
             // Tiene que andar esto eventualmente...
             // someones_listening = false;
-            const char* msg = "MaestroEspecialista: todos los demás maestros finalizaron de hornear. No hay más masa madre por hoy.\n";
+            const char* msg = "MaestroEspecialista: todos los demás maestros finalizaron de hornear. No hay más masa madre iiiiiiiiipor hoy.\n";
             this->logger->lockLogger();
             this->logger->writeToLogFile(msg, strlen(msg));
             this->logger->unlockLogger();
@@ -95,11 +95,15 @@ int MaestroEspecialista::realizarMisTareas() {
         // this->logger->unlockLogger();
 
         int nuevaRacion = this->getRacionDeMasaMadre();
+        if( !this->noEsHoraDeIrse() ) {
+            free(lectura_temporal);
+            return 0;
+        }
         this->fifoEscritura->escribir( (const void*) &nuevaRacion, sizeof(int));
         iterations++;
     }
     // sleep(4);
-    free(lectura_temporal);        // fijarse si en el Pipe me llegó la señal de finalización. Esto es si no uso SIGNALS        // sería válido???
+    free(lectura_temporal);
     return 0;
 
 }

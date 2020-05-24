@@ -3,12 +3,19 @@
 
 #include "Trabajador.h"
 #include "Pipe.h"
+#include "LockFile.h"
+
+#define PEDIDOS_FILE_FOLDER "pedidos/"
+const int TO_READ = 30;
 
 class Recepcionista : public Trabajador {
 
     private:
         
         Pipe* pipeEscritura;
+        LockFile* archivoDePedidos;
+
+        char* atenderElTelefono();
 
     protected:
 
