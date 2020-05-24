@@ -27,9 +27,9 @@ void MaestroEspecialista::abrirCanalesDeComunicacion() {
     }
 
     // TODO: encapsular? No sé si esto está haciendo la diferencia!
-	SIGABRT_Handler* sigabrt_handler = new SIGABRT_Handler();
-    this->sigabrt_handler = sigabrt_handler;
-	SignalHandler :: getInstance()->registrarHandler (SIGABRT, sigabrt_handler);	
+	// SIGABRT_Handler* sigabrt_handler = new SIGABRT_Handler();
+    // this->sigabrt_handler = sigabrt_handler;
+	// SignalHandler :: getInstance()->registrarHandler (SIGABRT, sigabrt_handler);	
 
     const char* mensaje = "MaestroEspecialista: abrí los fifos <entregas_de_MM> y <pedidos_de_MM>\n";
     this->logger->lockLogger();
@@ -65,6 +65,7 @@ int MaestroEspecialista::jornadaLaboral() {
 int MaestroEspecialista::realizarMisTareas() {
 
     int iterations = 0;
+    // while( this->noEsHoraDeIrseEspecialista() ) {
     while( this->noEsHoraDeIrse() ) {
         // alimentar la masa madre
         alimentarMasaMadre(masaMadre.size());
@@ -102,56 +103,60 @@ bool MaestroEspecialista::buscarUnPedidoNuevo() {
     char* lectura_pedido = (char*) malloc( strlen(PEDIDO_MM) * sizeof(char*) );
     memset(lectura_pedido, 0, strlen(PEDIDO_MM) * sizeof(char*));
 
-    if ( this->lecturaEstaPermitida() ){
+    // if ( this->lecturaEstaPermitida() ){
 
-        try {
-            fifoLectura->lockFifo();
-        } catch(std::string& mensaje) {
-            const char* msg = mensaje.c_str();
-            this->logger->lockLogger();
-            this->logger->writeToLogFile(msg, strlen(msg));
-            this->logger->unlockLogger();
-            exit(-1);
-        }
-        try{
-            this->fifoLectura->leer( (void*) lectura_pedido, strlen(PEDIDO_MM) );
-        } catch( std::string& mensaje ) {
-            const char* msg = mensaje.c_str();
-            this->logger->lockLogger();
-            this->logger->writeToLogFile(msg, strlen(msg));
-            this->logger->unlockLogger();
-            if (errno != 4) {
-                exit(-1);
-            }
-        }
-
-        try {
-            fifoLectura->unlockFifo();
-        } catch(std::string& mensaje) {
-            const char* msg = mensaje.c_str();
-            this->logger->lockLogger();
-            this->logger->writeToLogFile(msg, strlen(msg));
-            this->logger->unlockLogger();
-            exit(-1);
-        }
-
-        if(*lectura_pedido == EOF) {
-            // Tiene que andar esto eventualmente... ?
-            const char* msg = "MaestroEspecialista: todos los demás maestros finalizaron de hornear. No hay más masa madre iiiiiiiiipor hoy.\n";
-            this->logger->lockLogger();
-            this->logger->writeToLogFile(msg, strlen(msg));
-            this->logger->unlockLogger();
-        }
-
-        bool igualdad = (strcmp(lectura_pedido, PEDIDO_MM) == 0);
-        free(lectura_pedido);
-        return igualdad;
+    try {
+        fifoLectura->lockFifo();
+    } catch(std::string& mensaje) {
+        const char* msg = mensaje.c_str();
+        this->logger->lockLogger();
+        this->logger->writeToLogFile(msg, strlen(msg));
+        this->logger->unlockLogger();
+        exit(-1);
     }
-    return false;
+    try{
+        this->fifoLectura->leer( (void*) lectura_pedido, strlen(PEDIDO_MM) );
+    } catch( std::string& mensaje ) {
+        const char* msg = mensaje.c_str();
+        this->logger->lockLogger();
+        this->logger->writeToLogFile(msg, strlen(msg));
+        this->logger->unlockLogger();
+        raise(SIGINT);
+        std::cout << "Raised signal SIGINT and " << std::to_string(this->noEsHoraDeIrse()) << endl;
+        return false;
+        // TODO: este es el hardcodeo para que no muera!
+        if (errno != 4) {
+            exit(-1);
+        }
+    }
+
+    try {
+        fifoLectura->unlockFifo();
+    } catch(std::string& mensaje) {
+        const char* msg = mensaje.c_str();
+        this->logger->lockLogger();
+        this->logger->writeToLogFile(msg, strlen(msg));
+        this->logger->unlockLogger();
+        exit(-1);
+    }
+
+    if(*lectura_pedido == EOF) {
+        // Tiene que andar esto eventualmente... ?
+        const char* msg = "MaestroEspecialista: todos los demás maestros finalizaron de hornear. No hay más masa madre iiiiiiiiipor hoy.\n";
+        this->logger->lockLogger();
+        this->logger->writeToLogFile(msg, strlen(msg));
+        this->logger->unlockLogger();
+    }
+
+    bool igualdad = (strcmp(lectura_pedido, PEDIDO_MM) == 0);
+    free(lectura_pedido);
+    return igualdad;
+    // }
+    // return false;
 }
 
-bool MaestroEspecialista::lecturaEstaPermitida() {
-    return (this->sigabrt_handler->getReadingForbidden() == 0);
+bool MaestroEspecialista::noEsHoraDeIrseEspecialista() {
+    return (this->sigabrt_handler->getGracefulQuit() == 0);
 }
 
 int MaestroEspecialista::terminarJornada() {

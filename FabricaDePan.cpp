@@ -71,10 +71,7 @@ void FabricaDePan::despacharPedidosALaListaDePedidos() {
     // Lectura adelantada
     char * result = fgets(read_pointer, TO_READ, file );
     while (result != NULL) {
-        //this->listaDePedidos->lockPipe();
         this->listaDePedidos->escribir( (const void *) read_pointer, strlen(read_pointer) );
-        std::cout << "Fabrica de pan: escribi " << std::string(read_pointer) << " en el pipe " << endl;
-        //this->listaDePedidos->unlockPipe();
         result = fgets(read_pointer, TO_READ, file );
     }
 
@@ -118,7 +115,6 @@ int FabricaDePan::abrirLaFabrica() {
     this->logger->writeToLogFile(msg, strlen(msg));
     this->logger->unlockLogger();
 
-    // Esto quisiera que vaya al thread principal
     resultado = maestroEspecialista->jornadaLaboral();
     return PARENT_PROCESS;
 }

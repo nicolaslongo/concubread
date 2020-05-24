@@ -33,9 +33,10 @@ class MaestroEspecialista : public Trabajador {
         virtual int terminarJornada();
         virtual void abrirCanalesDeComunicacion();
 
+        bool noEsHoraDeIrseEspecialista();
         bool buscarUnPedidoNuevo();
         void enviarRacionDeMasaMadre();
-        bool lecturaEstaPermitida();
+        // bool lecturaEstaPermitida();
     protected:
 
     public:

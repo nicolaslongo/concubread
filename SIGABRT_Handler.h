@@ -3,17 +3,18 @@
 
 #include <signal.h>
 #include <assert.h>
+#include <iostream>
 
 #include "EventHandler.h"
 
 class SIGABRT_Handler : public EventHandler {
 
 	private:
-		sig_atomic_t readingForbidden;
+		sig_atomic_t gracefulQuit;
 
 	public:
 
-		SIGABRT_Handler () : readingForbidden(0) {
+		SIGABRT_Handler () : gracefulQuit(0) {
 		}
 
 		~SIGABRT_Handler () {
@@ -21,12 +22,13 @@ class SIGABRT_Handler : public EventHandler {
 
 		virtual int handleSignal ( int signum ) {
 			assert ( signum == SIGABRT );
-			this->readingForbidden = 1;
+			std::cout << "Cambio el valor de graceful quit" << endl;
+			this->gracefulQuit = 1;
 			return 0;
 		}
 
-		sig_atomic_t getReadingForbidden () const {
-			return this->readingForbidden;
+		sig_atomic_t getGracefulQuit () const {
+			return this->gracefulQuit;
 		}
 
 };
