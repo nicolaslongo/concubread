@@ -54,7 +54,6 @@ int MaestroPanadero::jornadaLaboral() {
 int MaestroPanadero::realizarMisTareas() {
 
     // Acá va la variable que modificaremos usando SIGNALS
-    int iterations = 0;
     while( this->noEsHoraDeIrse() ) {
 
         bool hayNuevoPedido = buscarUnPedidoNuevo();
@@ -69,14 +68,20 @@ int MaestroPanadero::realizarMisTareas() {
             hornear();
             //colocar en la gran canasta
         }
-        iterations++;
     }
+
+    std::string mensaje = "MaestroPanadero " + std::to_string(this->getId()) +
+            ": recibí SIGINT y ya no trabajo más.\n";
+    const char* exit_msg = mensaje.c_str();
+    this->logger->lockLogger();
+    this->logger->writeToLogFile(exit_msg, strlen(exit_msg));
+    this->logger->unlockLogger();
     return CHILD_PROCESS;
 
 }
 
 void MaestroPanadero::hornear() {
-    sleep(0.5);
+    sleep(TIEMPO_COCCION_ESTANDAR_PAN);
 }
 
 int* MaestroPanadero::pedirNuevaRacionDeMasaMadre() {
@@ -105,7 +110,7 @@ int* MaestroPanadero::pedirNuevaRacionDeMasaMadre() {
         exit(-1);
     }
 
-    std::string mensaje_recib =  "Soy MaestroPanadero " + std::to_string(this->getId()) +
+    std::string mensaje_recib =  "MaestroPanadero " + std::to_string(this->getId()) +
         ". Tengo un pedido de pan y para ello recibí " + std::to_string(*lectura_temporal) +
         " gramos de Masa Madre, procedo a hornearlo.\n";
     std::cout << mensaje_recib;
@@ -149,42 +154,15 @@ bool MaestroPanadero::buscarUnPedidoNuevo() {
 int MaestroPanadero::terminarJornada() {
 
     this->pipePedidosDePan->cerrar();
-    // delete this->pipePedidosDePan;
+
     this->pedidosMasaMadre->cerrar();
-    // delete this->pedidosMasaMadre;
+
     this->entregasMasaMadre->cerrar();
-    // delete this->entregasMasaMadre;
 
-    // try {
-    //     fifoEscritura->cerrar();
-    // } catch ( std::string& mensaje ) {
-    //     const char* msg = mensaje.c_str();
-    //     this->logger->lockLogger();
-    //     this->logger->writeToLogFile(msg, strlen(msg));
-    //     this->logger->unlockLogger();
-    //     exit(-1);
-    // }
-    // delete fifoEscritura;
-
-    // try {
-    //     fifoLectura->cerrar();
-    // } catch ( std::string& mensaje ) {
-    //     const char* msg = mensaje.c_str();
-    //     this->logger->lockLogger();
-    //     this->logger->writeToLogFile(msg, strlen(msg));
-    //     this->logger->unlockLogger();
-    //     exit(-1);
-    // }
-    // delete fifoLectura;
-
-    return CHILD_PROCESS;
-}
-
-int MaestroPanadero::empezarJornada() {
     return CHILD_PROCESS;
 }
 
 MaestroPanadero::~MaestroPanadero() {
-
-    
+    delete this->sigint_handler;
+    SignalHandler::destruir();
 }

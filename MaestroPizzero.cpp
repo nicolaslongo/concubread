@@ -54,7 +54,6 @@ int MaestroPizzero::jornadaLaboral() {
 int MaestroPizzero::realizarMisTareas() {
 
     // Acá va la variable que modificaremos usando SIGNALS
-    int iterations = 0;
     while( this->noEsHoraDeIrse() ) {
 
         bool hayNuevoPedido = buscarUnPedidoNuevo();
@@ -65,19 +64,54 @@ int MaestroPizzero::realizarMisTareas() {
                 free(lectura_temporal);
                 return CHILD_PROCESS;
             }
+            hornear(*lectura_temporal);
             free(lectura_temporal);
-            hornear();
             //colocar en la gran canasta
         }
-        iterations++;
     }
+
+    std::string mensaje = "MaestroPizzero " + std::to_string(this->getId()) +
+            ": recibí SIGINT y ya no trabajo más.\n";
+    const char* exit_msg = mensaje.c_str();
+    this->logger->lockLogger();
+    this->logger->writeToLogFile(exit_msg, strlen(exit_msg));
+    this->logger->unlockLogger();
     return CHILD_PROCESS;
 
 }
 
-void MaestroPizzero::hornear() {
-    sleep(2);
+void MaestroPizzero::hornear(int gramajeMasaMadre) {
+
+    int tiempoDeCoccion = definirTiempoDeCoccion( (unsigned int) gramajeMasaMadre );
+    sleep(tiempoDeCoccion);
+    std::string mensaje = "MaestroPizzero " + std::to_string(this->getId()) +
+            " el tiempo de cocción de ésta pizza fue de " + std::to_string(tiempoDeCoccion) +
+            " segundos.\n";
+    const char* msg = mensaje.c_str();
+    this->logger->lockLogger();
+    this->logger->writeToLogFile(msg, strlen(msg));
+    this->logger->unlockLogger();
 }
+
+int MaestroPizzero::definirTiempoDeCoccion(unsigned int seedNumber) {
+
+    // I also use current time to bias seed_number
+    std::srand(seedNumber * std::time(0));
+    // TODO: definir estas constantes
+    int desvio = 1 + (int) (20.0 * std::rand()/(RAND_MAX+1.0) ) + 10;
+
+    if (desvio % 3 == 0) {
+        return (TIEMPO_COCCION_ESTANDAR_PIZZA + 1);
+    }
+    else if (desvio % 3 == 1) {
+        return (TIEMPO_COCCION_ESTANDAR_PIZZA - 1);
+    }
+    else {
+        return (TIEMPO_COCCION_ESTANDAR_PIZZA + 0);
+
+    }
+}
+
 
 int* MaestroPizzero::pedirNuevaRacionDeMasaMadre() {
 
@@ -105,7 +139,7 @@ int* MaestroPizzero::pedirNuevaRacionDeMasaMadre() {
         exit(-1);
     }
 
-    std::string mensaje_recib =  "Soy MaestroPizzero " + std::to_string(this->getId()) +
+    std::string mensaje_recib =  "MaestroPizzero " + std::to_string(this->getId()) +
         ". Tengo un pedido de pizza y para ello recibí " + std::to_string(*lectura_temporal) +
         " gramos de Masa Madre, procedo a hornearlo.\n";
     std::cout << mensaje_recib;
@@ -149,21 +183,16 @@ bool MaestroPizzero::buscarUnPedidoNuevo() {
 int MaestroPizzero::terminarJornada() {
 
     this->pipePedidosDePizza->cerrar();
-    // delete this->pipePedidosDePizza;
+
     this->entregasMasaMadre->cerrar();
-    // delete this->entregasMasaMadre;
+
     this->pedidosMasaMadre->cerrar();
-    // delete this->pedidosMasaMadre;
 
-    return CHILD_PROCESS;
-}
 
-// TODO: borrar this right now
-int MaestroPizzero::empezarJornada() {
     return CHILD_PROCESS;
 }
 
 MaestroPizzero::~MaestroPizzero() {
-
-    
+    delete this->sigint_handler;
+    SignalHandler::destruir();
 }

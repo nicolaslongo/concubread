@@ -16,8 +16,8 @@ int Recepcionista::jornadaLaboral() {
         // Parent process. La Fabrica debe volver a su hilo
         return PARENT_PROCESS;
     }
-    // Child process. This is going to continue running from here
 
+    // Child process. This is going to continue running from here
     this->crearHandlerParaSIGINT();
     
     // open up streams flow
@@ -25,11 +25,6 @@ int Recepcionista::jornadaLaboral() {
 
     // realizar mis tareas
     int resultado = realizarMisTareas();
-
-    const char* msg_salida = "Recepcionista: realicé mis tareas, me voy a la mierda\n"; 
-    this->logger->lockLogger();
-    this->logger->writeToLogFile(msg_salida, strlen(msg_salida));
-    this->logger->unlockLogger();
 
     // terminar jornada
     resultado = terminarJornada();
@@ -79,11 +74,13 @@ int Recepcionista::atenderElTelefono() {
     }
 
     if(strcmp(lectura_pedido, PEDIDO_PAN) == 0) {
-        std::cout << "Recepcionista " << std::to_string(this->getId()) << ": Leí un pedido y era de panes" << endl;
+        // std::cout << "Recepcionista " << std::to_string(this->getId()) << ": Leí un pedido y era de panes" << endl;
+        free(lectura_pedido);
         return PEDIDO_PAN_FLAG;
     }
     else if( strcmp(lectura_pedido, PEDIDO_PIZZA) == 0) {
-        std::cout << "Recepcionista " << std::to_string(this->getId()) << ": Leí un pedido y era de pizzas" << endl;
+        // std::cout << "Recepcionista " << std::to_string(this->getId()) << ": Leí un pedido y era de pizzas" << endl;
+        free(lectura_pedido);
         return PEDIDO_PIZZA_FLAG;
     }
     else {
@@ -113,7 +110,7 @@ int Recepcionista::realizarMisTareas() {
             }
 
             std::string mensaje = "Recepcionista " + std::to_string(this->getId()) + 
-                ": atendí un pedido: " + std::string(pedido_str);
+                ": atendí un pedido " + std::string(pedido_str);
             const char* msg = mensaje.c_str();
             this->logger->lockLogger();
             this->logger->writeToLogFile(msg, strlen(msg));
@@ -123,8 +120,9 @@ int Recepcionista::realizarMisTareas() {
         }
     }
 
-    std::cout << "Sí estoy pasando por acá" << endl;
-    const char* exit_msg = "Recepcionista: recibí SIGINT y ya no trabajo más.\n";
+    std::string mensaje = "Recepcionista " + std::to_string(this->getId()) +
+            ": recibí SIGINT y ya no trabajo más.\n";
+    const char* exit_msg = mensaje.c_str();
     this->logger->lockLogger();
     this->logger->writeToLogFile(exit_msg, strlen(exit_msg));
     this->logger->unlockLogger();
@@ -147,6 +145,7 @@ int Recepcionista::empezarJornada() {
 }
 
 Recepcionista::~Recepcionista() {
-
+    delete this->sigint_handler;
+    SignalHandler::destruir();
 }
 

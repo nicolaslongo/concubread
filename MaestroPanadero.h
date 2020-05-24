@@ -9,6 +9,8 @@
 #include <unistd.h>
 #include <iostream>
 
+const int TIEMPO_COCCION_ESTANDAR_PAN = 1;
+
 class MaestroPanadero : public Trabajador {
 
     private:
@@ -16,7 +18,6 @@ class MaestroPanadero : public Trabajador {
         Pipe* entregasMasaMadre;
         Pipe* pipePedidosDePan;
 
-        virtual int empezarJornada();
         virtual int realizarMisTareas();
         virtual int terminarJornada();
         virtual void abrirCanalesDeComunicacion();

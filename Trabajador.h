@@ -31,7 +31,6 @@ class Trabajador {
         Trabajador(Logger* logger, int myId);
         virtual ~Trabajador();
         void crearHandlerParaSIGINT();
-        virtual int empezarJornada() = 0;
         virtual int jornadaLaboral() = 0;
         virtual int realizarMisTareas() = 0;
         virtual int terminarJornada() = 0;

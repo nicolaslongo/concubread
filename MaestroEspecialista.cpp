@@ -20,12 +20,6 @@ void MaestroEspecialista::abrirCanalesDeComunicacion() {
 
 int MaestroEspecialista::jornadaLaboral() {
     
-    // int pid = fork();
-    // if (pid != 0) {
-    //     // Parent process. La Fabrica debe volver a su hilo
-    //     return PARENT_PROCESS;
-    // }
-    // Child process. This is going to continue running from here
     this->crearHandlerParaSIGINT();
 
     // open up streams flow
@@ -34,11 +28,6 @@ int MaestroEspecialista::jornadaLaboral() {
     // realizar mis tareas
     int resultado = realizarMisTareas();
 
-    const char* msg = "Maestro especialista: Realicé mis tareas, me voy a la mierda\n"; 
-    this->logger->lockLogger();
-    this->logger->writeToLogFile(msg, strlen(msg));
-    this->logger->unlockLogger();
-
     // terminar jornada
     resultado = terminarJornada();
     return resultado;
@@ -46,20 +35,23 @@ int MaestroEspecialista::jornadaLaboral() {
  
 int MaestroEspecialista::realizarMisTareas() {
 
-    int iterations = 0;
-    // while( this->noEsHoraDeIrseEspecialista() ) {
     while( this->noEsHoraDeIrse() ) {
-        // alimentar la masa madre
+
         alimentarMasaMadre(masaMadre.size());
 
         bool hayNuevoPedido = buscarUnPedidoNuevo();
 
         if (hayNuevoPedido) {
             enviarRacionDeMasaMadre();
-            iterations++;
+            // iterations++;
         }
     }
-    std::cout << "El valor de iterations es " << iterations << endl;
+    std::string mensaje = "MaestroEspecialista " + std::to_string(this->getId()) +
+            ": recibí SIGINT y ya no trabajo más.\n";
+    const char* exit_msg = mensaje.c_str();
+    this->logger->lockLogger();
+    this->logger->writeToLogFile(exit_msg, strlen(exit_msg));
+    this->logger->unlockLogger();
     return PARENT_PROCESS;
 }
 
@@ -136,26 +128,16 @@ bool MaestroEspecialista::buscarUnPedidoNuevo() {
     return igualdad;
 }
 
-bool MaestroEspecialista::noEsHoraDeIrseEspecialista() {
-    return (this->sigabrt_handler->getGracefulQuit() == 0);
-}
+// bool MaestroEspecialista::noEsHoraDeIrseEspecialista() {
+//     return (this->sigabrt_handler->getGracefulQuit() == 0);
+// }
 
 int MaestroEspecialista::terminarJornada() {
-    // Devuelvo 1 para que el proceso sepa que no soy la fabrica de pan
-
-    // this->pedidosMasaMadre->cerrar();
-    // delete this->pedidosMasaMadre;
-    // this->entregasMasaMadre->cerrar();
-    // delete this->entregasMasaMadre;
 
     for(auto racion: masaMadre) {
         delete racion;       
     }
     return PARENT_PROCESS;
-}
-
-int MaestroEspecialista::empezarJornada() {
-    return CHILD_PROCESS;
 }
 
 void MaestroEspecialista::alimentarMasaMadre(int numeroDeRacion){
@@ -188,5 +170,6 @@ void MaestroEspecialista::aumentarRacionesConsumidas() {
 
 // TODO: se podría llevar esto al destructor de la clase padre
 MaestroEspecialista::~MaestroEspecialista() {
-
+    delete this->sigint_handler;
+    SignalHandler::destruir();
 }

@@ -4,7 +4,6 @@
 #include "Trabajador.h"
 #include "Pipe.h"
 #include "MasaMadre.h"
-#include "SIGABRT_Handler.h"
 
 #include <iostream>
 #include <unistd.h>
@@ -16,7 +15,6 @@ class MaestroEspecialista : public Trabajador {
 
         Pipe* pedidosMasaMadre;
         Pipe* entregasMasaMadre;
-        SIGABRT_Handler* sigabrt_handler;
 
         std::vector <MasaMadre*> masaMadre;
         int racionesConsumidas = 0;
@@ -27,7 +25,6 @@ class MaestroEspecialista : public Trabajador {
         int getRacionDeMasaMadre();
         int getRacionesConsumidas();
         void aumentarRacionesConsumidas();
-        virtual int empezarJornada();
         virtual int realizarMisTareas();
         virtual int terminarJornada();
         virtual void abrirCanalesDeComunicacion();
@@ -35,7 +32,7 @@ class MaestroEspecialista : public Trabajador {
         bool noEsHoraDeIrseEspecialista();
         bool buscarUnPedidoNuevo();
         void enviarRacionDeMasaMadre();
-        // bool lecturaEstaPermitida();
+
     protected:
 
     public:

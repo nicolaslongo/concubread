@@ -83,6 +83,10 @@ void FabricaDePan::despacharPedidosALaListaDePedidos() {
         result = fgets(read_pointer, TO_READ, file );
     }
 
+    free(read_pointer);
+
+    // TODO: try catch
+    fclose(file);
 }
 
 int FabricaDePan::abrirLaFabrica() {
@@ -129,6 +133,8 @@ int FabricaDePan::abrirLaFabrica() {
 
 
 int FabricaDePan::cerrarLaFabrica() {
+
+    std::cout << "\nFabricaDePan: estamos cerrando" << endl;
     const char* msg = "FabricaDePan: estamos cerrando.\n\nThis is it, fellas\n";
     this->logger->lockLogger();
     this->logger->writeToLogFile(msg, strlen(msg));

@@ -9,6 +9,8 @@
 #include <unistd.h>
 #include <iostream>
 
+const int TIEMPO_COCCION_ESTANDAR_PIZZA = 2;
+
 class MaestroPizzero : public Trabajador {
 
     private:
@@ -16,14 +18,14 @@ class MaestroPizzero : public Trabajador {
         Pipe* entregasMasaMadre;
         Pipe* pipePedidosDePizza;
 
-        virtual int empezarJornada();
         virtual int realizarMisTareas();
         virtual int terminarJornada();
         virtual void abrirCanalesDeComunicacion();
 
         bool buscarUnPedidoNuevo();
         int* pedirNuevaRacionDeMasaMadre();
-        void hornear();
+        void hornear(int gramajeMasaMadre);
+        int definirTiempoDeCoccion(unsigned int seedNumber);
         
     protected:
 
