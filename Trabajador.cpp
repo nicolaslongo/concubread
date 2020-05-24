@@ -3,8 +3,6 @@
 Trabajador::Trabajador(Logger* logger, int myId) {
     this->logger = logger;
     this->id = myId;
-
-    crearHandlerParaSIGINT();
 }
 
 void Trabajador::crearHandlerParaSIGINT() {

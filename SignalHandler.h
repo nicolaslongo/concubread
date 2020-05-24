@@ -4,6 +4,7 @@
 #include <signal.h>
 #include <stdio.h>
 #include <memory.h>
+#include <iostream>
 
 #include "EventHandler.h"
 

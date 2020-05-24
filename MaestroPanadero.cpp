@@ -1,34 +1,19 @@
 # include "MaestroPanadero.h"
 
-MaestroPanadero::MaestroPanadero (Logger* logger, int myId, Pipe* pipePedidosDePan) : Trabajador::Trabajador(logger, myId) {
-    this->pipeLectura = pipePedidosDePan;
+MaestroPanadero::MaestroPanadero (Logger* logger, int myId, Pipe* pipePedidosDePan,
+            Pipe* pipePedidosMasaMadre, Pipe* pipeEntregasMasaMadre) : Trabajador::Trabajador(logger, myId) {
+
+    this->pipePedidosDePan = pipePedidosDePan;
+    this->pedidosMasaMadre = pipePedidosMasaMadre;
+    this->entregasMasaMadre = pipeEntregasMasaMadre;
 }
 
 void MaestroPanadero::abrirCanalesDeComunicacion() {
 
-    this->pipeLectura->setearModo( this->pipeLectura->LECTURA );
-    
-    try {
-        fifoLectura = new FifoLectura(std::string("./fifos/entregas_de_MM"));
-        fifoLectura->abrir();
+    this->pipePedidosDePan->setearModo( this->pipePedidosDePan->LECTURA );
+    this->entregasMasaMadre->setearModo( this->entregasMasaMadre->LECTURA );
 
-    } catch ( std::string& mensaje ) {
-        const char* msg = mensaje.c_str();
-        this->logger->lockLogger();
-        this->logger->writeToLogFile(msg, strlen(msg));
-        this->logger->unlockLogger();
-        exit(-1);
-    }
-    try {
-        fifoEscritura = new FifoEscritura(std::string("./fifos/pedidos_de_MM"));
-        fifoEscritura->abrir();
-    } catch ( std::string& mensaje ) {
-        const char* msg = mensaje.c_str();
-        this->logger->lockLogger();
-        this->logger->writeToLogFile(msg, strlen(msg));
-        this->logger->unlockLogger();
-        exit(-1);
-    }
+    this->pedidosMasaMadre->setearModo( this->pedidosMasaMadre->ESCRITURA );
 
     std::string std_msg = "MaestroPanadero " + std::to_string(this->getId()) + 
         ": abrí los fifos <entregas_de_MM> y <pedidos_de_MM> y también el Pipe para recibir pedidos de pan\n";
@@ -47,6 +32,9 @@ int MaestroPanadero::jornadaLaboral() {
         // Parent process. La Fabrica debe volver a su hilo
         return PARENT_PROCESS;
     }
+
+    this->crearHandlerParaSIGINT();
+
     // Child process. This is going to continue running from here
     abrirCanalesDeComunicacion();
     // realizar mis tareas
@@ -94,11 +82,11 @@ void MaestroPanadero::hornear() {
 int* MaestroPanadero::pedirNuevaRacionDeMasaMadre() {
 
     // TODO: chequear esto try catch
-    fifoEscritura->escribir( (const void*) PEDIDO_MM, strlen(PEDIDO_MM));
+    pedidosMasaMadre->escribir( (const void*) PEDIDO_MM, strlen(PEDIDO_MM));
 
     int* lectura_temporal = (int*) malloc( sizeof(int*) );
     try {
-        fifoLectura->lockFifo();
+        entregasMasaMadre->lockPipe();
     } catch(std::string& mensaje) {
         const char* msg = mensaje.c_str();
         this->logger->lockLogger();
@@ -106,9 +94,9 @@ int* MaestroPanadero::pedirNuevaRacionDeMasaMadre() {
         this->logger->unlockLogger();
         exit(-1);
     }
-    fifoLectura->leer( (void*) lectura_temporal, sizeof(int) );
+    entregasMasaMadre->leer( (void*) lectura_temporal, sizeof(int) );
     try {
-        fifoLectura->unlockFifo();
+        entregasMasaMadre->unlockPipe();
     } catch(std::string& mensaje) {
         const char* msg = mensaje.c_str();
         this->logger->lockLogger();
@@ -134,7 +122,7 @@ bool MaestroPanadero::buscarUnPedidoNuevo() {
     memset(lectura_pedido, 0, strlen(PEDIDO_PAN) * sizeof(char*));
 
     try {
-        pipeLectura->lockPipe();
+        pipePedidosDePan->lockPipe();
     } catch(std::string& mensaje) {
         const char* msg = mensaje.c_str();
         this->logger->lockLogger();
@@ -142,9 +130,9 @@ bool MaestroPanadero::buscarUnPedidoNuevo() {
         this->logger->unlockLogger();
         exit(-1);
     }
-    pipeLectura->leer((void*) lectura_pedido, strlen(PEDIDO_PAN));
+    pipePedidosDePan->leer((void*) lectura_pedido, strlen(PEDIDO_PAN));
     try {
-        pipeLectura->unlockPipe();
+        pipePedidosDePan->unlockPipe();
     } catch(std::string& mensaje) {
         const char* msg = mensaje.c_str();
         this->logger->lockLogger();
@@ -160,29 +148,34 @@ bool MaestroPanadero::buscarUnPedidoNuevo() {
 
 int MaestroPanadero::terminarJornada() {
 
-    this->pipeLectura->cerrar();
+    this->pipePedidosDePan->cerrar();
+    // delete this->pipePedidosDePan;
+    this->pedidosMasaMadre->cerrar();
+    // delete this->pedidosMasaMadre;
+    this->entregasMasaMadre->cerrar();
+    // delete this->entregasMasaMadre;
 
-    try {
-        fifoEscritura->cerrar();
-    } catch ( std::string& mensaje ) {
-        const char* msg = mensaje.c_str();
-        this->logger->lockLogger();
-        this->logger->writeToLogFile(msg, strlen(msg));
-        this->logger->unlockLogger();
-        exit(-1);
-    }
-    delete fifoEscritura;
+    // try {
+    //     fifoEscritura->cerrar();
+    // } catch ( std::string& mensaje ) {
+    //     const char* msg = mensaje.c_str();
+    //     this->logger->lockLogger();
+    //     this->logger->writeToLogFile(msg, strlen(msg));
+    //     this->logger->unlockLogger();
+    //     exit(-1);
+    // }
+    // delete fifoEscritura;
 
-    try {
-        fifoLectura->cerrar();
-    } catch ( std::string& mensaje ) {
-        const char* msg = mensaje.c_str();
-        this->logger->lockLogger();
-        this->logger->writeToLogFile(msg, strlen(msg));
-        this->logger->unlockLogger();
-        exit(-1);
-    }
-    delete fifoLectura;
+    // try {
+    //     fifoLectura->cerrar();
+    // } catch ( std::string& mensaje ) {
+    //     const char* msg = mensaje.c_str();
+    //     this->logger->lockLogger();
+    //     this->logger->writeToLogFile(msg, strlen(msg));
+    //     this->logger->unlockLogger();
+    //     exit(-1);
+    // }
+    // delete fifoLectura;
 
     return CHILD_PROCESS;
 }

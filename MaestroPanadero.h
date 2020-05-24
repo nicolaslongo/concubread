@@ -12,9 +12,9 @@
 class MaestroPanadero : public Trabajador {
 
     private:
-        FifoLectura* fifoLectura;
-        FifoEscritura* fifoEscritura;
-        Pipe* pipeLectura;
+        Pipe* pedidosMasaMadre;
+        Pipe* entregasMasaMadre;
+        Pipe* pipePedidosDePan;
 
         virtual int empezarJornada();
         virtual int realizarMisTareas();
@@ -28,7 +28,8 @@ class MaestroPanadero : public Trabajador {
     protected:
 
     public:
-        MaestroPanadero(Logger* logger, int myId, Pipe* pipePedidosDePan);
+        MaestroPanadero(Logger* logger, int myId, Pipe* pipePedidosDePan, Pipe* pedidosMasaMadre,
+                                                Pipe* entregasMasaMadre);
         ~MaestroPanadero();
         virtual int jornadaLaboral();       // capaz este esté de más
 

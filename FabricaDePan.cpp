@@ -2,7 +2,6 @@
 
 FabricaDePan::FabricaDePan(Logger* logger, Configuracion* config) {
 
-    // leo los pedidos de algun lado. Los levanto
     this->logger = logger;
     this->config = config;
 
@@ -16,6 +15,16 @@ FabricaDePan::FabricaDePan(Logger* logger, Configuracion* config) {
     Pipe* pedidosTelefonicosDePizza = new Pipe();
     this->pipes.push_back(pedidosTelefonicosDePizza);
 
+    Pipe* pedidosMasaMadre = new Pipe();
+    this->pipes.push_back(pedidosMasaMadre);
+
+    Pipe* entregasMasaMadre = new Pipe();
+    this->pipes.push_back(entregasMasaMadre);
+
+    // creo al maestroEspecialista
+    maestroEspecialista = new MaestroEspecialista(logger, 0, pedidosMasaMadre, entregasMasaMadre);
+
+
     // creo a los recepcionistas
     int CANT_RECEPCIONISTAS = this->config->getCantidadRecepcionistas();
     for (int i = 0; i < CANT_RECEPCIONISTAS; i++) {
@@ -24,20 +33,23 @@ FabricaDePan::FabricaDePan(Logger* logger, Configuracion* config) {
                                         pedidosTelefonicosDePan, pedidosTelefonicosDePizza));
     }
     
-    // creo al maestroEspecialista
-    maestroEspecialista = new MaestroEspecialista(logger, 0);
-
     // creo a los maestros panaderos
     int CANT_PANADEROS = this->config->getCantidadMaestrosPanaderos();
     for (int i = 0; i < CANT_PANADEROS; i++) {
-        maestrosPanaderos.push_back(new MaestroPanadero(logger, i, pedidosTelefonicosDePan));
+        maestrosPanaderos.push_back(new MaestroPanadero(logger, i, pedidosTelefonicosDePan,
+                                                                    pedidosMasaMadre,
+                                                                    entregasMasaMadre));
     }
 
     // creo a los maestros pizzeros
     int CANT_PIZZEROS = this->config->getCantidadMaestrosPizzeros();
     for (int i = 0; i < CANT_PIZZEROS; i++) {
-        maestrosPizzeros.push_back(new MaestroPizzero(logger, i, pedidosTelefonicosDePizza));
+        maestrosPizzeros.push_back(new MaestroPizzero(logger, i, pedidosTelefonicosDePizza, 
+                                                                    pedidosMasaMadre,
+                                                                    entregasMasaMadre));
     }
+
+    //creo al delivery
 
     std::string mensaje = "FabricaDePan: creé " + std::to_string(CANT_PANADEROS) 
             + " MaestrosPanaderos, " + std::to_string(CANT_PIZZEROS) 
@@ -47,9 +59,6 @@ FabricaDePan::FabricaDePan(Logger* logger, Configuracion* config) {
     this->logger->lockLogger();
     this->logger->writeToLogFile(msg, strlen(msg));
     this->logger->unlockLogger();
-
-    //creo al delivery
-
 }
 
 void FabricaDePan::despacharPedidosALaListaDePedidos() {
@@ -67,7 +76,6 @@ void FabricaDePan::despacharPedidosALaListaDePedidos() {
     char* read_pointer = (char*) malloc( TO_READ * sizeof(char*) );
     memset(read_pointer, 0, TO_READ * sizeof(char*));
 
-    
     // Lectura adelantada
     char * result = fgets(read_pointer, TO_READ, file );
     while (result != NULL) {
@@ -145,6 +153,7 @@ FabricaDePan:: ~FabricaDePan() {
     }
 
     for (auto pipe: pipes) {
+        pipe->cerrar();
         delete pipe;
     }
 }

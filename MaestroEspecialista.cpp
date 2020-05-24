@@ -1,35 +1,16 @@
 # include "MaestroEspecialista.h"
 
-MaestroEspecialista::MaestroEspecialista (Logger* logger, int myId) : Trabajador::Trabajador(logger, myId) {
+MaestroEspecialista::MaestroEspecialista (Logger* logger, int myId, Pipe* pedidosMasaMadre, Pipe* entregasMasaMadre)
+         : Trabajador::Trabajador(logger, myId) {
+    this->pedidosMasaMadre = pedidosMasaMadre;
+    this->entregasMasaMadre = entregasMasaMadre;
+
 }
 
 void MaestroEspecialista::abrirCanalesDeComunicacion() {
 
-    try {
-        fifoEscritura = new FifoEscritura(std::string("./fifos/entregas_de_MM"));
-        fifoEscritura->abrir();
-    } catch ( std::string& mensaje ) {
-        const char* msg = mensaje.c_str();
-        this->logger->lockLogger();
-        this->logger->writeToLogFile(msg, strlen(msg));
-        this->logger->unlockLogger();
-        exit(-1);
-    }
-    try {
-        fifoLectura = new FifoLectura(std::string("./fifos/pedidos_de_MM"));
-        fifoLectura->abrir();
-    } catch ( std::string& mensaje ) {
-        const char* msg = mensaje.c_str();
-        this->logger->lockLogger();
-        this->logger->writeToLogFile(msg, strlen(msg));
-        this->logger->unlockLogger();
-        exit(-1);
-    }
-
-    // TODO: encapsular? No sé si esto está haciendo la diferencia!
-	// SIGABRT_Handler* sigabrt_handler = new SIGABRT_Handler();
-    // this->sigabrt_handler = sigabrt_handler;
-	// SignalHandler :: getInstance()->registrarHandler (SIGABRT, sigabrt_handler);	
+    this->pedidosMasaMadre->setearModo( this->pedidosMasaMadre->LECTURA );
+    this->entregasMasaMadre->setearModo( this->entregasMasaMadre->ESCRITURA );
 
     const char* mensaje = "MaestroEspecialista: abrí los fifos <entregas_de_MM> y <pedidos_de_MM>\n";
     this->logger->lockLogger();
@@ -45,6 +26,7 @@ int MaestroEspecialista::jornadaLaboral() {
     //     return PARENT_PROCESS;
     // }
     // Child process. This is going to continue running from here
+    this->crearHandlerParaSIGINT();
 
     // open up streams flow
     abrirCanalesDeComunicacion();
@@ -88,7 +70,7 @@ void MaestroEspecialista::enviarRacionDeMasaMadre() {
         return;
     }
     try {
-        this->fifoEscritura->escribir( (const void*) &nuevaRacion, sizeof(int));
+        this->entregasMasaMadre->escribir( (const void*) &nuevaRacion, sizeof(int));
     } catch ( std::string& mensaje ) {
         const char* msg = mensaje.c_str();
         this->logger->lockLogger();
@@ -106,7 +88,7 @@ bool MaestroEspecialista::buscarUnPedidoNuevo() {
     // if ( this->lecturaEstaPermitida() ){
 
     try {
-        fifoLectura->lockFifo();
+        this->pedidosMasaMadre->lockPipe();
     } catch(std::string& mensaje) {
         const char* msg = mensaje.c_str();
         this->logger->lockLogger();
@@ -115,15 +97,16 @@ bool MaestroEspecialista::buscarUnPedidoNuevo() {
         exit(-1);
     }
     try{
-        this->fifoLectura->leer( (void*) lectura_pedido, strlen(PEDIDO_MM) );
+        this->pedidosMasaMadre->leer( (void*) lectura_pedido, strlen(PEDIDO_MM) );
     } catch( std::string& mensaje ) {
         const char* msg = mensaje.c_str();
         this->logger->lockLogger();
         this->logger->writeToLogFile(msg, strlen(msg));
         this->logger->unlockLogger();
-        raise(SIGINT);
+        // raise(SIGINT);
         std::cout << "Raised signal SIGINT and " << std::to_string(this->noEsHoraDeIrse()) << endl;
-        return false;
+        exit(-1);
+        // return false
         // TODO: este es el hardcodeo para que no muera!
         if (errno != 4) {
             exit(-1);
@@ -131,7 +114,7 @@ bool MaestroEspecialista::buscarUnPedidoNuevo() {
     }
 
     try {
-        fifoLectura->unlockFifo();
+        this->pedidosMasaMadre->unlockPipe();
     } catch(std::string& mensaje) {
         const char* msg = mensaje.c_str();
         this->logger->lockLogger();
@@ -151,8 +134,6 @@ bool MaestroEspecialista::buscarUnPedidoNuevo() {
     bool igualdad = (strcmp(lectura_pedido, PEDIDO_MM) == 0);
     free(lectura_pedido);
     return igualdad;
-    // }
-    // return false;
 }
 
 bool MaestroEspecialista::noEsHoraDeIrseEspecialista() {
@@ -162,29 +143,10 @@ bool MaestroEspecialista::noEsHoraDeIrseEspecialista() {
 int MaestroEspecialista::terminarJornada() {
     // Devuelvo 1 para que el proceso sepa que no soy la fabrica de pan
 
-    try {
-        fifoEscritura->cerrar();
-        fifoEscritura->eliminar();
-    } catch ( std::string& mensaje ) {
-        const char* msg = mensaje.c_str();
-        this->logger->lockLogger();
-        this->logger->writeToLogFile(msg, strlen(msg));
-        this->logger->unlockLogger();
-        exit(-1);
-    }
-    delete fifoEscritura;
-
-    try {
-        fifoLectura->cerrar();
-        fifoLectura->eliminar();
-    } catch ( std::string& mensaje ) {
-        const char* msg = mensaje.c_str();
-        this->logger->lockLogger();
-        this->logger->writeToLogFile(msg, strlen(msg));
-        this->logger->unlockLogger();
-        exit(-1);
-    }
-    delete fifoLectura;
+    // this->pedidosMasaMadre->cerrar();
+    // delete this->pedidosMasaMadre;
+    // this->entregasMasaMadre->cerrar();
+    // delete this->entregasMasaMadre;
 
     for(auto racion: masaMadre) {
         delete racion;       

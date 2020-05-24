@@ -2,8 +2,7 @@
 #define MAESTROESPECIALISTA_H_
 
 #include "Trabajador.h"
-#include "FifoLectura.h"
-#include "FifoEscritura.h"
+#include "Pipe.h"
 #include "MasaMadre.h"
 #include "SIGABRT_Handler.h"
 
@@ -15,8 +14,8 @@ class MaestroEspecialista : public Trabajador {
 
     private:
 
-        FifoLectura* fifoLectura;
-        FifoEscritura* fifoEscritura;
+        Pipe* pedidosMasaMadre;
+        Pipe* entregasMasaMadre;
         SIGABRT_Handler* sigabrt_handler;
 
         std::vector <MasaMadre*> masaMadre;
@@ -40,7 +39,7 @@ class MaestroEspecialista : public Trabajador {
     protected:
 
     public:
-        MaestroEspecialista(Logger* logger, int myId);
+        MaestroEspecialista(Logger* logger, int myId, Pipe* pedidosMasaMadre, Pipe* entregasMasaMadre);
         ~MaestroEspecialista();
         virtual int jornadaLaboral();       // capaz este esté de más
 

@@ -18,6 +18,8 @@ int Recepcionista::jornadaLaboral() {
     }
     // Child process. This is going to continue running from here
 
+    this->crearHandlerParaSIGINT();
+    
     // open up streams flow
     abrirCanalesDeComunicacion();
 
