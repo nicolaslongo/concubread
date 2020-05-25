@@ -71,7 +71,7 @@ FabricaDePan::FabricaDePan(Logger* logger, Configuracion* config) {
     this->logger->unlockLogger();
 }
 
-void FabricaDePan::despacharPedidosALaListaDePedidos() {
+void FabricaDePan::abrirLaLineaTelefonicaParaPedidos() {
 
     std::string name = (string(PEDIDOS_FILE_FOLDER) + "pedidos.txt");
     FILE* file = fopen(name.c_str() , "r");
@@ -138,7 +138,7 @@ int FabricaDePan::abrirLaFabrica() {
 
     // Ningún child process llega hasta acá. Solo el parent Process. Este se encargará de darle vida
     // al maestroEspecialista
-    despacharPedidosALaListaDePedidos();
+    abrirLaLineaTelefonicaParaPedidos();
 
     std::string mensaje = "FabricaDePan: ya están todos laburando. Arranca un poco más tarde el Maestro Especialista\n";
     const char* msg = mensaje.c_str();

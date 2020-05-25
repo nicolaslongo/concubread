@@ -11,7 +11,7 @@ using namespace std;
 
 #define CONFIG_FILE_FOLDER "config/"
 const int MAX_READ = 100;
-const int MIN_READ = 4;
+const int MIN_READ = 5;
 
 
 class Configuracion {
@@ -29,6 +29,8 @@ class Configuracion {
         void leerCantidadMaestrosPanaderos();
         void leerCantidadMaestrosPizzeros();
         void leerCantidadRepartidores();
+        // void leerArchivoDePedidos();
+
     protected:
 
     public:

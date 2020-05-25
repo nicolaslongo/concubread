@@ -6,9 +6,9 @@
 #include "MaestroPizzero.h"
 #include "Recepcionista.h"
 #include "Repartidor.h"
-#include "Pipe.h"
-#include "Logger.h"
-#include "Configuracion.h"
+// #include "Pipe.h"
+#include "../utils/Logger.h"
+#include "../utils/Configuracion.h"
 
 #include <sched.h>
 // #include <sys/wait.h>   // wait syscall
@@ -42,7 +42,7 @@ class FabricaDePan {
         // guardo los pipes para luego liberar la memoria
         std::vector <Pipe*> pipes;
 
-        void despacharPedidosALaListaDePedidos();
+        void abrirLaLineaTelefonicaParaPedidos();
 
     protected:
 

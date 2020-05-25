@@ -2,8 +2,7 @@
 #define REPARTIDOR_H_
 
 #include "Trabajador.h"
-#include "Pipe.h"
-#include "LockFile.h"
+#include "../utils/LockFile.h"
 
 const std::string ENTREGADOS_FOLDER = "entregados/";
 
