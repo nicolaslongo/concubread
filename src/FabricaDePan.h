@@ -42,7 +42,7 @@ class FabricaDePan {
         // guardo los pipes para luego liberar la memoria
         std::vector <Pipe*> pipes;
 
-        void despacharPedidosALaListaDePedidos();
+        void abrirLaLineaTelefonicaParaPedidos();
 
     protected:
 

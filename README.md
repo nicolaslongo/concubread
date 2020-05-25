@@ -7,3 +7,7 @@ Primer proyecto de la materia 75.59 - Técnicas de Programación Concurrente I
 
 ```valgrind --leak-check=full --show-leak-kinds=all ./ConcuBread```
 valgrind --leak-check=full --show-leak-kinds=all ./ConcuBread
+
+
+Latex (overleaf) link to share and edit:
+https://es.overleaf.com/1532886356kxcxmtrhcvsf

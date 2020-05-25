@@ -29,6 +29,8 @@ class Configuracion {
         void leerCantidadMaestrosPanaderos();
         void leerCantidadMaestrosPizzeros();
         void leerCantidadRepartidores();
+        // void leerArchivoDePedidos();
+
     protected:
 
     public:
