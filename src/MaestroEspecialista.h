@@ -2,7 +2,6 @@
 #define MAESTROESPECIALISTA_H_
 
 #include "Trabajador.h"
-#include "Pipe.h"
 #include "MasaMadre.h"
 
 #include <iostream>

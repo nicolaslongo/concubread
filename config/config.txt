@@ -1,0 +1,10 @@
+Cantidad de Recepcionistas
+100
+Cantidad de Maestros Panaderos
+100
+Cantidad de Maestros Pizzeros
+100
+Cantidad de Repartidores
+100
+Archivo de pedidos
+/pedidos/pedidos01.txt

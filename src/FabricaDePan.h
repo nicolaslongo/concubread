@@ -6,9 +6,9 @@
 #include "MaestroPizzero.h"
 #include "Recepcionista.h"
 #include "Repartidor.h"
-#include "Pipe.h"
-#include "Logger.h"
-#include "Configuracion.h"
+// #include "Pipe.h"
+#include "../utils/Logger.h"
+#include "../utils/Configuracion.h"
 
 #include <sched.h>
 // #include <sys/wait.h>   // wait syscall

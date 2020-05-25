@@ -8,10 +8,10 @@
 *.obj
 
 # ignore folders
-/fifos
-/logfiles
 .vscode/
-/config
+CMakeFiles/
+entregados/
+logfiles/
 
 # Precompiled Headers
 *.gch

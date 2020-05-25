@@ -101,8 +101,8 @@ char* Repartidor::buscarUnPedidoListo() {
         return lectura_pedido;
     }
     else {
-        std::cout << "Repartidor " << std::to_string(this->getId()) << ": Leí un pedido y era NULO es esto " 
-                << lectura_pedido << endl;
+        // std::cout << "Repartidor " << std::to_string(this->getId()) << ": Leí un pedido y era NULO es esto " 
+        //         << lectura_pedido << endl;
         free(lectura_pedido);
         return NULL;
     }

@@ -1,6 +1,6 @@
-#include "Logger.h"
-#include "FabricaDePan.h"
-#include "Configuracion.h"
+#include "./utils/Logger.h"
+#include "./src/FabricaDePan.h"
+#include "./utils/Configuracion.h"
 
 int main() {
     // Creo el log

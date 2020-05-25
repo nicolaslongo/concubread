@@ -2,7 +2,6 @@
 #define RECEPCIONISTA_H_
 
 #include "Trabajador.h"
-#include "Pipe.h"
 
 #include <iostream>
 

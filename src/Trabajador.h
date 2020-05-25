@@ -1,10 +1,11 @@
 #ifndef TRABAJADOR_H_
 #define TRABAJADOR_H_
 
-#include "Logger.h"
+#include "../utils/Logger.h"
+#include "../utils/Pipe.h"
 
-#include "SIGINT_Handler.h"
-#include "SignalHandler.h"
+#include "../utils/SIGINT_Handler.h"
+#include "../utils/SignalHandler.h"
 
 const int PARENT_PROCESS = 0;
 const int CHILD_PROCESS = 1;

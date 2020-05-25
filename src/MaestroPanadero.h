@@ -2,9 +2,6 @@
 #define MAESTROPANADERO_H_
 
 #include "Trabajador.h"
-#include "FifoLectura.h"
-#include "FifoEscritura.h"
-#include "Pipe.h"
 
 #include <unistd.h>
 #include <iostream>
