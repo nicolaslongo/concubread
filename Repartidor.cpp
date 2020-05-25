@@ -83,7 +83,7 @@ char* Repartidor::buscarUnPedidoListo() {
         this->logger->unlockLogger();
         exit(-1);
     }
-    this->cajasParaEntregar->leer( (void*) lectura_pedido, LARGO_PEDIDO * sizeof(char*) );
+    this->cajasParaEntregar->leer( (void*) lectura_pedido, LARGO_PEDIDO ); //  * sizeof(char*)
     try {
         this->cajasParaEntregar->unlockPipe();
     } catch(std::string& mensaje) {

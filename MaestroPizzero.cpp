@@ -18,7 +18,7 @@ void MaestroPizzero::abrirCanalesDeComunicacion() {
     this->cajasParaEntregar->setearModo( this->cajasParaEntregar->ESCRITURA );
 
     std::string std_msg = "MaestroPizzero " + std::to_string(this->getId()) + 
-        ": abrí los pipes para recibir pedidos de pizza y ponerlos en cajas una vez horneados\n";
+        ": abrí los pipes para recibir pedidos de pizza y ponerlos en cajas.\n";
     const char* mensaje = std_msg.c_str();
     this->logger->lockLogger();
     this->logger->writeToLogFile(mensaje, strlen(mensaje));
