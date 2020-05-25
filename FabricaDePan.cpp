@@ -63,7 +63,8 @@ FabricaDePan::FabricaDePan(Logger* logger, Configuracion* config) {
     std::string mensaje = "FabricaDePan: creé " + std::to_string(CANT_PANADEROS) 
             + " MaestrosPanaderos, " + std::to_string(CANT_PIZZEROS) 
             + " MaestrosPizzeros, " + std::to_string(CANT_RECEPCIONISTAS)
-            + " Recepcionistas, \n";
+            + " Recepcionistas, " + std::to_string (CANT_REPARTIDORES) 
+            + " Repartidores, y por supuesto al MaestroEspecialista.\n";
     const char* msg = mensaje.c_str();
     this->logger->lockLogger();
     this->logger->writeToLogFile(msg, strlen(msg));
@@ -126,6 +127,15 @@ int FabricaDePan::abrirLaFabrica() {
         }
     }
 
+    int CANT_REPARTIDORES = this->config->getCantidadRepartidores();
+    for (int i = 0; i < CANT_REPARTIDORES; i++) {
+        resultado = repartidores.at(i)->jornadaLaboral();
+        if (resultado == CHILD_PROCESS) {
+            return resultado;
+        }
+    }
+
+
     // Ningún child process llega hasta acá. Solo el parent Process. Este se encargará de darle vida
     // al maestroEspecialista
     despacharPedidosALaListaDePedidos();
@@ -144,7 +154,7 @@ int FabricaDePan::abrirLaFabrica() {
 int FabricaDePan::cerrarLaFabrica() {
 
     std::cout << "\nFabricaDePan: estamos cerrando" << endl;
-    const char* msg = "FabricaDePan: estamos cerrando.\n\nThis is it, fellas\n";
+    const char* msg = "FabricaDePan: estamos cerrando.\n";
     this->logger->lockLogger();
     this->logger->writeToLogFile(msg, strlen(msg));
     this->logger->unlockLogger();
@@ -159,11 +169,17 @@ FabricaDePan:: ~FabricaDePan() {
     }
 
     delete maestroEspecialista;
+
     for(auto maestroPanadero: maestrosPanaderos) {
         delete maestroPanadero;       
     }
+
     for(auto maestroPizzero: maestrosPizzeros) {
         delete maestroPizzero;       
+    }
+
+    for(auto repartidor: repartidores) {
+        delete repartidor;       
     }
 
     for (auto pipe: pipes) {

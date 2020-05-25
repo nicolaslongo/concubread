@@ -27,6 +27,8 @@ void Configuracion::leerConfigFile(){
     leerCantidadMaestrosPanaderos();
 
     leerCantidadMaestrosPizzeros();
+
+    leerCantidadRepartidores();
 }
 
 void Configuracion::leerCantidadRecepcionistas() {

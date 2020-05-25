@@ -60,9 +60,9 @@ int MaestroPizzero::realizarMisTareas() {
                 free(lectura_temporal);
                 return CHILD_PROCESS;
             }
-            hornear(*lectura_temporal);
+            int tiempoDeCoccion = hornear(*lectura_temporal);
+            colocarElPedidoHorneadoEnUnaCaja(*lectura_temporal, tiempoDeCoccion);
             free(lectura_temporal);
-            //colocar en la gran canasta
         }
     }
 
@@ -76,17 +76,49 @@ int MaestroPizzero::realizarMisTareas() {
 
 }
 
-void MaestroPizzero::hornear(int gramajeMasaMadre) {
+void MaestroPizzero::colocarElPedidoHorneadoEnUnaCaja(int gramajeDeMasaMadre, int tiempoDeCoccion) {
+
+    // try {
+    //     cajasParaEntregar->lockPipe();
+    // } catch(std::string& mensaje) {
+    //     const char* msg = mensaje.c_str();
+    //     this->logger->lockLogger();
+    //     this->logger->writeToLogFile(msg, strlen(msg));
+    //     this->logger->unlockLogger();
+    //     exit(-1);
+    // }
+
+    cajasParaEntregar->escribir( (const void*) PEDIDO_PIZZA, strlen(PEDIDO_PIZZA));
+
+    // try {
+    //     entregasMasaMadre->unlockPipe();
+    // } catch(std::string& mensaje) {
+    //     const char* msg = mensaje.c_str();
+    //     this->logger->lockLogger();
+    //     this->logger->writeToLogFile(msg, strlen(msg));
+    //     this->logger->unlockLogger();
+    //     exit(-1);
+    // }
+
+    std::string mensaje_recib =  "MaestroPizzero " + std::to_string(this->getId()) +
+        ". El pedido de pizza fue horneado con " + std::to_string(gramajeDeMasaMadre) +
+        " gramos de Masa Madre, y tardó " + std::to_string(tiempoDeCoccion) +
+        " segundos.\n";
+        
+    std::cout << mensaje_recib;
+    const char* recibido = mensaje_recib.c_str();
+    this->logger->lockLogger();
+    this->logger->writeToLogFile(recibido, strlen(recibido));
+    this->logger->unlockLogger();
+
+}
+
+
+int MaestroPizzero::hornear(int gramajeMasaMadre) {
 
     int tiempoDeCoccion = definirTiempoDeCoccion( (unsigned int) gramajeMasaMadre );
     sleep(tiempoDeCoccion);
-    std::string mensaje = "MaestroPizzero " + std::to_string(this->getId()) +
-            " el tiempo de cocción de ésta pizza fue de " + std::to_string(tiempoDeCoccion) +
-            " segundos.\n";
-    const char* msg = mensaje.c_str();
-    this->logger->lockLogger();
-    this->logger->writeToLogFile(msg, strlen(msg));
-    this->logger->unlockLogger();
+    return tiempoDeCoccion;
 }
 
 int MaestroPizzero::definirTiempoDeCoccion(unsigned int seedNumber) {
@@ -135,14 +167,6 @@ int* MaestroPizzero::pedirNuevaRacionDeMasaMadre() {
         exit(-1);
     }
 
-    std::string mensaje_recib =  "MaestroPizzero " + std::to_string(this->getId()) +
-        ". Tengo un pedido de pizza y para ello recibí " + std::to_string(*lectura_temporal) +
-        " gramos de Masa Madre, procedo a hornearlo.\n";
-    std::cout << mensaje_recib;
-    const char* recibido = mensaje_recib.c_str();
-    this->logger->lockLogger();
-    this->logger->writeToLogFile(recibido, strlen(recibido));
-    this->logger->unlockLogger();
     return lectura_temporal;
 
 }

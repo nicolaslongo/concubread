@@ -60,9 +60,9 @@ int MaestroPanadero::realizarMisTareas() {
                 free(lectura_temporal);
                 return CHILD_PROCESS;
             }
-            free(lectura_temporal);
             hornear();
-            //colocar en la gran canasta
+            colocarElPedidoHorneadoEnUnaCaja(*lectura_temporal);
+            free(lectura_temporal);
         }
     }
 
@@ -78,6 +78,43 @@ int MaestroPanadero::realizarMisTareas() {
 
 void MaestroPanadero::hornear() {
     sleep(TIEMPO_COCCION_ESTANDAR_PAN);
+}
+
+void MaestroPanadero::colocarElPedidoHorneadoEnUnaCaja(int gramajeDeMasaMadre) {
+
+    // try {
+    //     cajasParaEntregar->lockPipe();
+    // } catch(std::string& mensaje) {
+    //     const char* msg = mensaje.c_str();
+    //     this->logger->lockLogger();
+    //     this->logger->writeToLogFile(msg, strlen(msg));
+    //     this->logger->unlockLogger();
+    //     exit(-1);
+    // }
+
+    cajasParaEntregar->escribir( (const void*) PEDIDO_PAN, strlen(PEDIDO_PAN));
+
+    // try {
+    //     entregasMasaMadre->unlockPipe();
+    // } catch(std::string& mensaje) {
+    //     const char* msg = mensaje.c_str();
+    //     this->logger->lockLogger();
+    //     this->logger->writeToLogFile(msg, strlen(msg));
+    //     this->logger->unlockLogger();
+    //     exit(-1);
+    // }
+
+    std::string mensaje_recib =  "MaestroPanadero " + std::to_string(this->getId()) +
+        ". El pedido de pan fue horneado con " + std::to_string(gramajeDeMasaMadre) +
+        " gramos de Masa Madre, y tardó " + std::to_string(TIEMPO_COCCION_ESTANDAR_PAN) +
+        " segundo.\n";
+        
+    std::cout << mensaje_recib;
+    const char* recibido = mensaje_recib.c_str();
+    this->logger->lockLogger();
+    this->logger->writeToLogFile(recibido, strlen(recibido));
+    this->logger->unlockLogger();
+
 }
 
 int* MaestroPanadero::pedirNuevaRacionDeMasaMadre() {
@@ -106,14 +143,6 @@ int* MaestroPanadero::pedirNuevaRacionDeMasaMadre() {
         exit(-1);
     }
 
-    std::string mensaje_recib =  "MaestroPanadero " + std::to_string(this->getId()) +
-        ". Tengo un pedido de pan y para ello recibí " + std::to_string(*lectura_temporal) +
-        " gramos de Masa Madre, procedo a hornearlo.\n";
-    std::cout << mensaje_recib;
-    const char* recibido = mensaje_recib.c_str();
-    this->logger->lockLogger();
-    this->logger->writeToLogFile(recibido, strlen(recibido));
-    this->logger->unlockLogger();
     return lectura_temporal;
 
 }

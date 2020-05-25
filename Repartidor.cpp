@@ -6,7 +6,6 @@ Repartidor::Repartidor(Logger* logger, int myId, Pipe* cajasParaEntregar) :
     this->cajasParaEntregar = cajasParaEntregar;
 }
 
-
 int Repartidor::jornadaLaboral() {
     
     int pid = fork();
@@ -30,6 +29,9 @@ int Repartidor::jornadaLaboral() {
 void Repartidor::abrirCanalesDeComunicacion() {
     this->cajasParaEntregar->setearModo( this->cajasParaEntregar->LECTURA );
 
+    const std::string nombre = ENTREGADOS_FOLDER + "entregados.txt";
+    this->entregados = new LockFile( nombre );
+
     std::string std_msg = "Repartidor " + std::to_string(this->getId()) + 
         ": abrí el pipe para recibir las cajas para entregarlas\n";
     const char* mensaje = std_msg.c_str();
@@ -40,18 +42,12 @@ void Repartidor::abrirCanalesDeComunicacion() {
 
 int Repartidor::realizarMisTareas() {
 
-    // Acá va la variable que modificaremos usando SIGNALS
     while( this->noEsHoraDeIrse() ) {
 
-        int hayUnPedidoListo = buscarUnPedidoListo();
-
-        if (hayUnPedidoListo != PEDIDO_NULO) {
-
-            // primero lo imprimo, luego lo escribo
-            if (hayUnPedidoListo == PEDIDO_PAN_FLAG)
-                std::cout << "Un pedido de pan listo" << endl;
-            else if (hayUnPedidoListo == PEDIDO_PIZZA_FLAG)
-                std::cout << "Un pedido de pizza listo" << endl;
+        char* pedido = buscarUnPedidoListo();
+        if (pedido != NULL) {
+            entregarPedido(pedido);
+            free(pedido);
         }
     }
 
@@ -65,7 +61,15 @@ int Repartidor::realizarMisTareas() {
     return CHILD_PROCESS;
 }
 
-int Repartidor::buscarUnPedidoListo() {
+void Repartidor::entregarPedido(char* pedido) {
+
+    entregados->tomarLock();
+    entregados->escribir( pedido, strlen(pedido) );
+    entregados->liberarLock();
+
+}
+
+char* Repartidor::buscarUnPedidoListo() {
     
     char* lectura_pedido = (char*) malloc( LARGO_PEDIDO * sizeof(char*) );
     memset(lectura_pedido, 0, LARGO_PEDIDO * sizeof(char*));
@@ -79,7 +83,7 @@ int Repartidor::buscarUnPedidoListo() {
         this->logger->unlockLogger();
         exit(-1);
     }
-    this->cajasParaEntregar->leer( (void*) lectura_pedido, sizeof(int) );
+    this->cajasParaEntregar->leer( (void*) lectura_pedido, LARGO_PEDIDO * sizeof(char*) );
     try {
         this->cajasParaEntregar->unlockPipe();
     } catch(std::string& mensaje) {
@@ -91,27 +95,23 @@ int Repartidor::buscarUnPedidoListo() {
     }
 
     if(strcmp(lectura_pedido, PEDIDO_PAN) == 0) {
-        // std::cout << "Recepcionista " << std::to_string(this->getId()) << ": Leí un pedido y era de panes" << endl;
-        free(lectura_pedido);
-        return PEDIDO_PAN_FLAG;
+        return lectura_pedido;
     }
     else if( strcmp(lectura_pedido, PEDIDO_PIZZA) == 0) {
-        // std::cout << "Recepcionista " << std::to_string(this->getId()) << ": Leí un pedido y era de pizzas" << endl;
-        free(lectura_pedido);
-        return PEDIDO_PIZZA_FLAG;
+        return lectura_pedido;
     }
     else {
         std::cout << "Repartidor " << std::to_string(this->getId()) << ": Leí un pedido y era NULO es esto " 
                 << lectura_pedido << endl;
         free(lectura_pedido);
-        return PEDIDO_NULO;
+        return NULL;
     }
 }
 
 int Repartidor::terminarJornada() {
 
     this->cajasParaEntregar->cerrar();
-
+    delete this->entregados;
     return CHILD_PROCESS;
 }
 

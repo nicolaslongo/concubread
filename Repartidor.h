@@ -3,15 +3,19 @@
 
 #include "Trabajador.h"
 #include "Pipe.h"
+#include "LockFile.h"
+
+const std::string ENTREGADOS_FOLDER = "entregados/";
 
 class Repartidor : public Trabajador {
 
     private:
 
         Pipe* cajasParaEntregar;
-        // Pipe* grandesCanastas;
+        LockFile* entregados;
 
-        int buscarUnPedidoListo();
+        char* buscarUnPedidoListo();
+        void entregarPedido(char* pedidoListo);
         virtual int realizarMisTareas();
         virtual int terminarJornada();
         virtual void abrirCanalesDeComunicacion();

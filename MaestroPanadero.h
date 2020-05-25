@@ -26,6 +26,7 @@ class MaestroPanadero : public Trabajador {
         bool buscarUnPedidoNuevo();
         int* pedirNuevaRacionDeMasaMadre();
         void hornear();
+        void colocarElPedidoHorneadoEnUnaCaja(int gramajeDeMasaMadre);
         
     protected:
 

@@ -25,9 +25,10 @@ class MaestroPizzero : public Trabajador {
 
         bool buscarUnPedidoNuevo();
         int* pedirNuevaRacionDeMasaMadre();
-        void hornear(int gramajeMasaMadre);
+        int hornear(int gramajeMasaMadre);
         int definirTiempoDeCoccion(unsigned int seedNumber);
-        
+        void colocarElPedidoHorneadoEnUnaCaja(int gramajeDeMasaMadre, int tiempoDeCoccion);
+
     protected:
 
     public:
