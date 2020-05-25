@@ -1,11 +1,13 @@
 # include "MaestroPanadero.h"
 
 MaestroPanadero::MaestroPanadero (Logger* logger, int myId, Pipe* pipePedidosDePan,
-            Pipe* pipePedidosMasaMadre, Pipe* pipeEntregasMasaMadre) : Trabajador::Trabajador(logger, myId) {
+            Pipe* pipePedidosMasaMadre, Pipe* pipeEntregasMasaMadre, Pipe* cajasParaEntregar)
+            : Trabajador::Trabajador(logger, myId) {
 
     this->pipePedidosDePan = pipePedidosDePan;
     this->pedidosMasaMadre = pipePedidosMasaMadre;
     this->entregasMasaMadre = pipeEntregasMasaMadre;
+    this->cajasParaEntregar = cajasParaEntregar;
 }
 
 void MaestroPanadero::abrirCanalesDeComunicacion() {
@@ -14,9 +16,10 @@ void MaestroPanadero::abrirCanalesDeComunicacion() {
     this->entregasMasaMadre->setearModo( this->entregasMasaMadre->LECTURA );
 
     this->pedidosMasaMadre->setearModo( this->pedidosMasaMadre->ESCRITURA );
+    this->cajasParaEntregar->setearModo( this->cajasParaEntregar->ESCRITURA );
 
     std::string std_msg = "MaestroPanadero " + std::to_string(this->getId()) + 
-        ": abrí los fifos <entregas_de_MM> y <pedidos_de_MM> y también el Pipe para recibir pedidos de pan\n";
+        ": abrí los pipes para recibir pedidos de pan y ponerlos en cajas una vez horneados\n";
     const char* mensaje = std_msg.c_str();
     this->logger->lockLogger();
     this->logger->writeToLogFile(mensaje, strlen(mensaje));
@@ -39,12 +42,6 @@ int MaestroPanadero::jornadaLaboral() {
     abrirCanalesDeComunicacion();
     // realizar mis tareas
     int resultado = realizarMisTareas();
-    std::string std_msg = "MaestroPanadero " + std::to_string(this->getId()) + 
-        ": Realicé mis tareas, me voy a la mierda\n";
-    const char* msg = std_msg.c_str(); 
-    this->logger->lockLogger();
-    this->logger->writeToLogFile(msg, strlen(msg));
-    this->logger->unlockLogger();
 
     // terminar jornada
     resultado = terminarJornada();
@@ -53,7 +50,6 @@ int MaestroPanadero::jornadaLaboral() {
 
 int MaestroPanadero::realizarMisTareas() {
 
-    // Acá va la variable que modificaremos usando SIGNALS
     while( this->noEsHoraDeIrse() ) {
 
         bool hayNuevoPedido = buscarUnPedidoNuevo();

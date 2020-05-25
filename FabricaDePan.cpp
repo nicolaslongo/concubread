@@ -21,6 +21,9 @@ FabricaDePan::FabricaDePan(Logger* logger, Configuracion* config) {
     Pipe* entregasMasaMadre = new Pipe();
     this->pipes.push_back(entregasMasaMadre);
 
+    Pipe* cajasParaEntregar = new Pipe();
+    this->pipes.push_back(cajasParaEntregar);
+
     // creo al maestroEspecialista
     maestroEspecialista = new MaestroEspecialista(logger, 0, pedidosMasaMadre, entregasMasaMadre);
 
@@ -38,7 +41,8 @@ FabricaDePan::FabricaDePan(Logger* logger, Configuracion* config) {
     for (int i = 0; i < CANT_PANADEROS; i++) {
         maestrosPanaderos.push_back(new MaestroPanadero(logger, i, pedidosTelefonicosDePan,
                                                                     pedidosMasaMadre,
-                                                                    entregasMasaMadre));
+                                                                    entregasMasaMadre,
+                                                                    cajasParaEntregar));
     }
 
     // creo a los maestros pizzeros
@@ -46,10 +50,15 @@ FabricaDePan::FabricaDePan(Logger* logger, Configuracion* config) {
     for (int i = 0; i < CANT_PIZZEROS; i++) {
         maestrosPizzeros.push_back(new MaestroPizzero(logger, i, pedidosTelefonicosDePizza, 
                                                                     pedidosMasaMadre,
-                                                                    entregasMasaMadre));
+                                                                    entregasMasaMadre,
+                                                                    cajasParaEntregar));
     }
 
     //creo al delivery
+    int CANT_REPARTIDORES = this->config->getCantidadRepartidores();
+    for (int i = 0; i < CANT_REPARTIDORES; i++) {
+        repartidores.push_back(new Repartidor(logger, i, cajasParaEntregar));
+    }
 
     std::string mensaje = "FabricaDePan: creé " + std::to_string(CANT_PANADEROS) 
             + " MaestrosPanaderos, " + std::to_string(CANT_PIZZEROS) 
@@ -144,7 +153,6 @@ int FabricaDePan::cerrarLaFabrica() {
 
 
 FabricaDePan:: ~FabricaDePan() {
-    // Logger is deleted finally by main function
 
     for(auto recepcionista: recepcionistas) {
         delete recepcionista;       

@@ -95,14 +95,14 @@ bool MaestroEspecialista::buscarUnPedidoNuevo() {
         this->logger->lockLogger();
         this->logger->writeToLogFile(msg, strlen(msg));
         this->logger->unlockLogger();
-        // raise(SIGINT);
-        std::cout << "Raised signal SIGINT and " << std::to_string(this->noEsHoraDeIrse()) << endl;
         exit(-1);
+        // // raise(SIGINT);
+        // std::cout << "Raised signal SIGINT and " << std::to_string(this->noEsHoraDeIrse()) << endl;
         // return false
         // TODO: este es el hardcodeo para que no muera!
-        if (errno != 4) {
-            exit(-1);
-        }
+        // if (errno != 4) {
+        //     exit(-1);
+        // }
     }
 
     try {

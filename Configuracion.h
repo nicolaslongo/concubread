@@ -22,18 +22,20 @@ class Configuracion {
         int cantidadMaestrosPanaderos;
         int cantidadRecepcionistas;
         int cantidadMaestrosPizzeros;
-        // int cantidadRepartidores;
+        int cantidadRepartidores;
 
         void leerConfigFile();
         void leerCantidadRecepcionistas();
         void leerCantidadMaestrosPanaderos();
         void leerCantidadMaestrosPizzeros();
+        void leerCantidadRepartidores();
     protected:
 
     public:
         int getCantidadMaestrosPanaderos();
         int getCantidadRecepcionistas();
         int getCantidadMaestrosPizzeros();
+        int getCantidadRepartidores();
         Configuracion(Logger* logger);
         ~Configuracion();
 

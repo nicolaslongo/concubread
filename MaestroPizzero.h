@@ -17,6 +17,7 @@ class MaestroPizzero : public Trabajador {
         Pipe* pedidosMasaMadre;
         Pipe* entregasMasaMadre;
         Pipe* pipePedidosDePizza;
+        Pipe* cajasParaEntregar;
 
         virtual int realizarMisTareas();
         virtual int terminarJornada();
@@ -31,9 +32,9 @@ class MaestroPizzero : public Trabajador {
 
     public:
         MaestroPizzero(Logger* logger, int myId, Pipe* pipePedidosDePizza, Pipe* pedidosMasaMadre,
-                                                Pipe* entregasMasaMadre);
+                                                Pipe* entregasMasaMadre, Pipe* cajasParaEntregar);
         ~MaestroPizzero();
-        virtual int jornadaLaboral();       // capaz este esté de más
+        virtual int jornadaLaboral();
 
 };
 

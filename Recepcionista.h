@@ -7,11 +7,6 @@
 #include <iostream>
 
 #define PEDIDOS_FILE_FOLDER "pedidos/"
-const int TO_READ = 30;
-
-const int PEDIDO_NULO = 0;
-const int PEDIDO_PAN_FLAG = 1;
-const int PEDIDO_PIZZA_FLAG = 2;
 
 class Recepcionista : public Trabajador {
 

@@ -1,17 +1,21 @@
 #ifndef FABRICADEPAN_H_
 #define FABRICADEPAN_H_
 
-#include "Pipe.h"
+#include "MaestroEspecialista.h"
 #include "MaestroPanadero.h"
 #include "MaestroPizzero.h"
-#include "MaestroEspecialista.h"
 #include "Recepcionista.h"
+#include "Repartidor.h"
+#include "Pipe.h"
 #include "Logger.h"
 #include "Configuracion.h"
 
 #include <sched.h>
-#include <sys/wait.h>   // wait syscall
+// #include <sys/wait.h>   // wait syscall
 using namespace std;
+
+// TODO: esto podría ser el largo de mensajes
+const int TO_READ = 30;
 
 class FabricaDePan {
 
@@ -32,8 +36,10 @@ class FabricaDePan {
         // r recepcionistas
         std::vector <Recepcionista*> recepcionistas;
 
-        // d deliverys
+        // d repartidores
+        std::vector <Repartidor*> repartidores;
 
+        // guardo los pipes para luego liberar la memoria
         std::vector <Pipe*> pipes;
 
         void despacharPedidosALaListaDePedidos();

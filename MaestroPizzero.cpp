@@ -1,22 +1,24 @@
 # include "MaestroPizzero.h"
 
 MaestroPizzero::MaestroPizzero (Logger* logger, int myId, Pipe* pipePedidosDePizza,
-            Pipe* pipePedidosMasaMadre, Pipe* pipeEntregasMasaMadre) : Trabajador::Trabajador(logger, myId) {
+            Pipe* pipePedidosMasaMadre, Pipe* pipeEntregasMasaMadre, Pipe* cajasParaEntregar) : Trabajador::Trabajador(logger, myId) {
 
     this->pipePedidosDePizza = pipePedidosDePizza;
     this->pedidosMasaMadre = pipePedidosMasaMadre;
     this->entregasMasaMadre = pipeEntregasMasaMadre;
+    this->cajasParaEntregar = cajasParaEntregar;
 }
 
 void MaestroPizzero::abrirCanalesDeComunicacion() {
 
     this->pipePedidosDePizza->setearModo( this->pipePedidosDePizza->LECTURA );
     this->entregasMasaMadre->setearModo( this->entregasMasaMadre->LECTURA );
-    this->pedidosMasaMadre->setearModo( this->pedidosMasaMadre->ESCRITURA );
 
+    this->pedidosMasaMadre->setearModo( this->pedidosMasaMadre->ESCRITURA );
+    this->cajasParaEntregar->setearModo( this->cajasParaEntregar->ESCRITURA );
 
     std::string std_msg = "MaestroPizzero " + std::to_string(this->getId()) + 
-        ": abrí los fifos <entregas_de_MM> y <pedidos_de_MM> y también el Pipe para recibir pedidos de pizza\n";
+        ": abrí los pipes para recibir pedidos de pizza y ponerlos en cajas una vez horneados\n";
     const char* mensaje = std_msg.c_str();
     this->logger->lockLogger();
     this->logger->writeToLogFile(mensaje, strlen(mensaje));
@@ -39,13 +41,7 @@ int MaestroPizzero::jornadaLaboral() {
     abrirCanalesDeComunicacion();
     // realizar mis tareas
     int resultado = realizarMisTareas();
-    std::string std_msg = "MaestroPizzero " + std::to_string(this->getId()) + 
-        ": Realicé mis tareas, me voy a la mierda\n";
-    const char* msg = std_msg.c_str(); 
-    this->logger->lockLogger();
-    this->logger->writeToLogFile(msg, strlen(msg));
-    this->logger->unlockLogger();
-
+    
     // terminar jornada
     resultado = terminarJornada();
     return resultado;
