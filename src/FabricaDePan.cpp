@@ -25,7 +25,8 @@ FabricaDePan::FabricaDePan(Logger* logger, Configuracion* config) {
     this->pipes.push_back(cajasParaEntregar);
 
     // creo al maestroEspecialista
-    maestroEspecialista = new MaestroEspecialista(logger, 0, pedidosMasaMadre, entregasMasaMadre);
+    maestroEspecialista = new MaestroEspecialista(logger, 0, listaDePedidos, pedidosTelefonicosDePan,
+                                pedidosTelefonicosDePizza, pedidosMasaMadre, entregasMasaMadre, cajasParaEntregar);
 
 
     // creo a los recepcionistas

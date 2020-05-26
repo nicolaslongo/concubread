@@ -14,6 +14,7 @@ class MaestroEspecialista : public Trabajador {
 
         Pipe* pedidosMasaMadre;
         Pipe* entregasMasaMadre;
+        std::vector <Pipe*> pipes;
 
         std::vector <MasaMadre*> masaMadre;
         int racionesConsumidas = 0;
@@ -35,7 +36,9 @@ class MaestroEspecialista : public Trabajador {
     protected:
 
     public:
-        MaestroEspecialista(Logger* logger, int myId, Pipe* pedidosMasaMadre, Pipe* entregasMasaMadre);
+        MaestroEspecialista(Logger* logger, int myId, Pipe* listaDePedidos, Pipe* pedidosTelefonicosDePan,
+                            Pipe* pedidosTelefonicosDePizza, Pipe* entregasMasaMadre, Pipe* pedidosMasaMadre,
+                            Pipe* cajasParaEntregar);
         ~MaestroEspecialista();
         virtual int jornadaLaboral();
 

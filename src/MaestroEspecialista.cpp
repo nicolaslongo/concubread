@@ -1,9 +1,15 @@
 # include "MaestroEspecialista.h"
 
-MaestroEspecialista::MaestroEspecialista (Logger* logger, int myId, Pipe* pedidosMasaMadre, Pipe* entregasMasaMadre)
+MaestroEspecialista::MaestroEspecialista (Logger* logger, int myId, Pipe* listaDePedidos, Pipe* pedidosTelefonicosDePan,
+                            Pipe* pedidosTelefonicosDePizza, Pipe* entregasMasaMadre, Pipe* pedidosMasaMadre,
+                            Pipe* cajasParaEntregar)
          : Trabajador::Trabajador(logger, myId) {
-    this->pedidosMasaMadre = pedidosMasaMadre;
-    this->entregasMasaMadre = entregasMasaMadre;
+    
+    this->pipes = {listaDePedidos, pedidosTelefonicosDePan, pedidosTelefonicosDePizza,
+                    entregasMasaMadre, pedidosMasaMadre, cajasParaEntregar};
+                    
+    this->pedidosMasaMadre = NULL;
+    this->entregasMasaMadre = NULL;
 
 }
 
