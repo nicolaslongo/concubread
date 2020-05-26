@@ -7,9 +7,10 @@ Nicolás Longo - 98271
 ## Comandos para compilar el programa:
 
 ```cmake .```
+
 ```make```
 
-## Comandos para correr el programa:
+### Comandos para correr el programa:
 
 Este ejecutable no recibe parámetros. Utiliza un archivo de configuración para definirlos que se encuentra en /config/ y se llama config.txt
 
@@ -20,7 +21,7 @@ Si se quiere ejecutar el chequeo de memoria con valgrind:
 ```valgrind --leak-check=full --show-leak-kinds=all ./ConcuBread```
 
 
-## Archivos de prueba:
+### Archivos de prueba:
 - pedidosCorto.txt:
 	-	Son 5 pedidos en total.
 	-	Pedidos de panes: 3
@@ -43,9 +44,8 @@ Si se quiere ejecutar el chequeo de memoria con valgrind:
 
 En todos los casos los archivos de pedidos deben encontrarse en el path '/pedidos/'
 
-## Lista de pedidos procesados (archivo de salida):
+### Lista de pedidos procesados (archivo de salida):
 La salida para todos los archivos se encuentra en la carpeta '/entregados/' bajo el nombre de 'entregados.txt'
 
-
-Latex (overleaf) link to share and edit:
+Latex project (overleaf) link to share and edit:
 https://es.overleaf.com/1532886356kxcxmtrhcvsf
