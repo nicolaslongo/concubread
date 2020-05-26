@@ -23,13 +23,14 @@ class Configuracion {
         int cantidadRecepcionistas;
         int cantidadMaestrosPizzeros;
         int cantidadRepartidores;
+        char* archivoDePedidos;
 
         void leerConfigFile();
         void leerCantidadRecepcionistas();
         void leerCantidadMaestrosPanaderos();
         void leerCantidadMaestrosPizzeros();
         void leerCantidadRepartidores();
-        // void leerArchivoDePedidos();
+        void leerArchivoDePedidos();
 
     protected:
 
@@ -38,6 +39,7 @@ class Configuracion {
         int getCantidadRecepcionistas();
         int getCantidadMaestrosPizzeros();
         int getCantidadRepartidores();
+        std::string getArchivoDePedidos();
         Configuracion(Logger* logger);
         ~Configuracion();
 

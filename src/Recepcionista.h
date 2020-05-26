@@ -24,7 +24,6 @@ class Recepcionista : public Trabajador {
         Recepcionista(Logger* logger, int myId, Pipe* listaDePedidos,
                         Pipe* pedidosTelefonicosDePan, Pipe* pedidosTelefonicosDePizza);
         ~Recepcionista();
-        int empezarJornada();
         int jornadaLaboral();
         int realizarMisTareas();
         int terminarJornada();

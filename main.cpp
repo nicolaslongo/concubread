@@ -3,7 +3,6 @@
 #include "./utils/Configuracion.h"
 
 int main() {
-    // Creo el log
     Logger* logger = new Logger();
     
     Configuracion* config = new Configuracion(logger);

@@ -15,9 +15,6 @@ class Repartidor : public Trabajador {
 
         char* buscarUnPedidoListo();
         void entregarPedido(char* pedidoListo);
-        virtual int realizarMisTareas();
-        virtual int terminarJornada();
-        virtual void abrirCanalesDeComunicacion();
 
     protected:
 
@@ -26,6 +23,9 @@ class Repartidor : public Trabajador {
         Repartidor(Logger* logger, int myId, Pipe* cajasParaEntregar);
         ~Repartidor();
         int jornadaLaboral();
+        int realizarMisTareas();
+        int terminarJornada();
+        void abrirCanalesDeComunicacion();
 
 };
 

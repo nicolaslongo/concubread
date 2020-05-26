@@ -17,16 +17,12 @@ int Recepcionista::jornadaLaboral() {
         return PARENT_PROCESS;
     }
 
-    // Child process. This is going to continue running from here
     this->crearHandlerParaSIGINT();
     
-    // open up streams flow
     abrirCanalesDeComunicacion();
 
-    // realizar mis tareas
     int resultado = realizarMisTareas();
 
-    // terminar jornada
     resultado = terminarJornada();
 
     return resultado;
@@ -34,7 +30,6 @@ int Recepcionista::jornadaLaboral() {
 
 void Recepcionista::abrirCanalesDeComunicacion() {
 
-    // el Pipe ya está abierto, pero lo cierro para lectura
     this->pipeEscrituraPanes->setearModo( this->pipeEscrituraPanes->ESCRITURA );
     this->pipeEscrituraPizzas->setearModo( this->pipeEscrituraPizzas->ESCRITURA );
     this->pipeLectura->setearModo( this->pipeLectura->LECTURA );
@@ -74,17 +69,16 @@ int Recepcionista::atenderElTelefono() {
     }
 
     if(strcmp(lectura_pedido, PEDIDO_PAN) == 0) {
-        // std::cout << "Recepcionista " << std::to_string(this->getId()) << ": Leí un pedido y era de panes" << endl;
         free(lectura_pedido);
         return PEDIDO_PAN_FLAG;
     }
     else if( strcmp(lectura_pedido, PEDIDO_PIZZA) == 0) {
-        // std::cout << "Recepcionista " << std::to_string(this->getId()) << ": Leí un pedido y era de pizzas" << endl;
         free(lectura_pedido);
         return PEDIDO_PIZZA_FLAG;
     }
     else {
-        // std::cout << "Recepcionista " << std::to_string(this->getId()) << ": Leí un pedido y no sé qué era" 
+        // TODO: borrar iostream
+        // std::cout << "Recepcionista " << std::to_string(this->getId()) << ": Leí un pedido y no sé qué era " 
         //         << lectura_pedido << endl;
         free(lectura_pedido);
         return PEDIDO_NULO;
@@ -93,7 +87,6 @@ int Recepcionista::atenderElTelefono() {
 
 
 int Recepcionista::realizarMisTareas() {
-    // acá hago todo lo que tengo que hacer en un loop
 
     while( this->noEsHoraDeIrse() ) {
 
@@ -112,7 +105,7 @@ int Recepcionista::realizarMisTareas() {
             }
 
             std::string mensaje = "Recepcionista " + std::to_string(this->getId()) + 
-                ": atendí un pedido " + std::string(pedido_str);
+                ": atendí un " + std::string(pedido_str);
             const char* msg = mensaje.c_str();
             this->logger->lockLogger();
             this->logger->writeToLogFile(msg, strlen(msg));
@@ -133,18 +126,12 @@ int Recepcionista::realizarMisTareas() {
 
 int Recepcionista::terminarJornada() {
 
-    // limpieza de coso
     this->pipeEscrituraPanes->cerrar();
     this->pipeEscrituraPizzas->cerrar();
     this->pipeLectura->cerrar();
     return CHILD_PROCESS;
 }
 
-// TODO: no lo estoy usando
-int Recepcionista::empezarJornada() {
-    // Este no lo estoy usando
-    return CHILD_PROCESS;
-}
 
 Recepcionista::~Recepcionista() {
     delete this->sigint_handler;

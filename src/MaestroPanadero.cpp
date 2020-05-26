@@ -32,18 +32,14 @@ int MaestroPanadero::jornadaLaboral() {
     
     int pid = fork();
     if (pid != 0) {
-        // Parent process. La Fabrica debe volver a su hilo
         return PARENT_PROCESS;
     }
 
     this->crearHandlerParaSIGINT();
 
-    // Child process. This is going to continue running from here
     abrirCanalesDeComunicacion();
-    // realizar mis tareas
     int resultado = realizarMisTareas();
 
-    // terminar jornada
     resultado = terminarJornada();
     return resultado;
 }
@@ -82,27 +78,7 @@ void MaestroPanadero::hornear() {
 
 void MaestroPanadero::colocarElPedidoHorneadoEnUnaCaja(int gramajeDeMasaMadre) {
 
-    // try {
-    //     cajasParaEntregar->lockPipe();
-    // } catch(std::string& mensaje) {
-    //     const char* msg = mensaje.c_str();
-    //     this->logger->lockLogger();
-    //     this->logger->writeToLogFile(msg, strlen(msg));
-    //     this->logger->unlockLogger();
-    //     exit(-1);
-    // }
-
     cajasParaEntregar->escribir( (const void*) PEDIDO_PAN, strlen(PEDIDO_PAN));
-
-    // try {
-    //     entregasMasaMadre->unlockPipe();
-    // } catch(std::string& mensaje) {
-    //     const char* msg = mensaje.c_str();
-    //     this->logger->lockLogger();
-    //     this->logger->writeToLogFile(msg, strlen(msg));
-    //     this->logger->unlockLogger();
-    //     exit(-1);
-    // }
 
     std::string mensaje_recib =  "MaestroPanadero " + std::to_string(this->getId()) +
         ". El pedido de pan fue horneado con " + std::to_string(gramajeDeMasaMadre) +
@@ -119,7 +95,6 @@ void MaestroPanadero::colocarElPedidoHorneadoEnUnaCaja(int gramajeDeMasaMadre) {
 
 int* MaestroPanadero::pedirNuevaRacionDeMasaMadre() {
 
-    // TODO: chequear esto try catch
     pedidosMasaMadre->escribir( (const void*) PEDIDO_MM, strlen(PEDIDO_MM));
 
     int* lectura_temporal = (int*) malloc( sizeof(int*) );

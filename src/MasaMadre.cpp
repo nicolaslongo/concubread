@@ -8,10 +8,9 @@ MasaMadre::MasaMadre(int racionNumero) {
 }
 
 void MasaMadre::setearGramaje(unsigned int seed_number) {
-    // I also use current time to bias seed_number
+
     std::srand(seed_number * std::time(0));
 
-    // TODO: definir estas constantes
     int desvio = 1 + (int) (20.0 * std::rand()/(RAND_MAX+1.0) ) - 10;
     
     gramaje = GRAMAJE_ESTANDAR + desvio;

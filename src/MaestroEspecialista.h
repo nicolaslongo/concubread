@@ -37,7 +37,7 @@ class MaestroEspecialista : public Trabajador {
     public:
         MaestroEspecialista(Logger* logger, int myId, Pipe* pedidosMasaMadre, Pipe* entregasMasaMadre);
         ~MaestroEspecialista();
-        virtual int jornadaLaboral();       // capaz este esté de más
+        virtual int jornadaLaboral();
 
 };
 

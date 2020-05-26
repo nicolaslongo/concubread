@@ -22,13 +22,10 @@ int MaestroEspecialista::jornadaLaboral() {
     
     this->crearHandlerParaSIGINT();
 
-    // open up streams flow
     abrirCanalesDeComunicacion();
 
-    // realizar mis tareas
     int resultado = realizarMisTareas();
 
-    // terminar jornada
     resultado = terminarJornada();
     return resultado;
 }
@@ -43,7 +40,6 @@ int MaestroEspecialista::realizarMisTareas() {
 
         if (hayNuevoPedido) {
             enviarRacionDeMasaMadre();
-            // iterations++;
         }
     }
     std::string mensaje = "MaestroEspecialista " + std::to_string(this->getId()) +
@@ -77,8 +73,6 @@ bool MaestroEspecialista::buscarUnPedidoNuevo() {
     char* lectura_pedido = (char*) malloc( strlen(PEDIDO_MM) * sizeof(char*) );
     memset(lectura_pedido, 0, strlen(PEDIDO_MM) * sizeof(char*));
 
-    // if ( this->lecturaEstaPermitida() ){
-
     try {
         this->pedidosMasaMadre->lockPipe();
     } catch(std::string& mensaje) {
@@ -96,13 +90,6 @@ bool MaestroEspecialista::buscarUnPedidoNuevo() {
         this->logger->writeToLogFile(msg, strlen(msg));
         this->logger->unlockLogger();
         exit(-1);
-        // // raise(SIGINT);
-        // std::cout << "Raised signal SIGINT and " << std::to_string(this->noEsHoraDeIrse()) << endl;
-        // return false
-        // TODO: este es el hardcodeo para que no muera!
-        // if (errno != 4) {
-        //     exit(-1);
-        // }
     }
 
     try {
@@ -116,8 +103,7 @@ bool MaestroEspecialista::buscarUnPedidoNuevo() {
     }
 
     if(*lectura_pedido == EOF) {
-        // Tiene que andar esto eventualmente... ?
-        const char* msg = "MaestroEspecialista: todos los demás maestros finalizaron de hornear. No hay más masa madre iiiiiiiiipor hoy.\n";
+        const char* msg = "MaestroEspecialista: todos los demás maestros finalizaron de hornear. No hay más masa madre por hoy.\n";
         this->logger->lockLogger();
         this->logger->writeToLogFile(msg, strlen(msg));
         this->logger->unlockLogger();
@@ -127,10 +113,6 @@ bool MaestroEspecialista::buscarUnPedidoNuevo() {
     free(lectura_pedido);
     return igualdad;
 }
-
-// bool MaestroEspecialista::noEsHoraDeIrseEspecialista() {
-//     return (this->sigabrt_handler->getGracefulQuit() == 0);
-// }
 
 int MaestroEspecialista::terminarJornada() {
 
@@ -156,6 +138,7 @@ void MaestroEspecialista::alimentarMasaMadre(int numeroDeRacion){
 int MaestroEspecialista::getRacionDeMasaMadre() {
     MasaMadre* estaRacion = this->masaMadre.at(this->getRacionesConsumidas());
     this->aumentarRacionesConsumidas();
+    estaRacion->setearConsumida();
     return estaRacion->getGramaje();
 }
 
@@ -167,8 +150,6 @@ void MaestroEspecialista::aumentarRacionesConsumidas() {
     this->racionesConsumidas++;
 }
 
-
-// TODO: se podría llevar esto al destructor de la clase padre
 MaestroEspecialista::~MaestroEspecialista() {
     delete this->sigint_handler;
     SignalHandler::destruir();

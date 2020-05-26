@@ -31,7 +31,6 @@ FabricaDePan::FabricaDePan(Logger* logger, Configuracion* config) {
     // creo a los recepcionistas
     int CANT_RECEPCIONISTAS = this->config->getCantidadRecepcionistas();
     for (int i = 0; i < CANT_RECEPCIONISTAS; i++) {
-        // los creo
         this->recepcionistas.push_back(new Recepcionista(logger, i, listaDePedidos,
                                         pedidosTelefonicosDePan, pedidosTelefonicosDePizza));
     }
@@ -73,10 +72,10 @@ FabricaDePan::FabricaDePan(Logger* logger, Configuracion* config) {
 
 void FabricaDePan::abrirLaLineaTelefonicaParaPedidos() {
 
-    std::string name = (string(PEDIDOS_FILE_FOLDER) + "pedidos.txt");
+    std::string name = (string(PEDIDOS_FILE_FOLDER) + this->config->getArchivoDePedidos() );
     FILE* file = fopen(name.c_str() , "r");
     if(file == NULL) {
-        const char* msg = "Error abriendo el archivo de configuracion. Nada de esto puede suceder.\n";
+        const char* msg = "Error abriendo el archivo de configuracion. Probablemente se indicó mal el nombre del mismo.\n";
         this->logger->lockLogger();
         this->logger->writeToLogFile(msg, strlen(msg));
         this->logger->unlockLogger();
@@ -95,8 +94,13 @@ void FabricaDePan::abrirLaLineaTelefonicaParaPedidos() {
 
     free(read_pointer);
 
-    // TODO: try catch
-    fclose(file);
+    if ( fclose(file) < 0 ) {
+        const char* msg = "Error cerrando el archivo de configuración. Esto se traducirá en un memory leak.\n";
+        this->logger->lockLogger();
+        this->logger->writeToLogFile(msg, strlen(msg));
+        this->logger->unlockLogger();
+    };
+
 }
 
 int FabricaDePan::abrirLaFabrica() {
@@ -119,14 +123,6 @@ int FabricaDePan::abrirLaFabrica() {
         }
     }
 
-    int CANT_RECEPCIONSITAS = this->config->getCantidadRecepcionistas();
-    for (int i = 0; i < CANT_RECEPCIONSITAS; i++) {
-        resultado = recepcionistas.at(i)->jornadaLaboral();
-        if (resultado == CHILD_PROCESS) {
-            return resultado;
-        }
-    }
-
     int CANT_REPARTIDORES = this->config->getCantidadRepartidores();
     for (int i = 0; i < CANT_REPARTIDORES; i++) {
         resultado = repartidores.at(i)->jornadaLaboral();
@@ -135,9 +131,16 @@ int FabricaDePan::abrirLaFabrica() {
         }
     }
 
+    int CANT_RECEPCIONSITAS = this->config->getCantidadRecepcionistas();
+    for (int i = 0; i < CANT_RECEPCIONSITAS; i++) {
+        resultado = recepcionistas.at(i)->jornadaLaboral();
+        if (resultado == CHILD_PROCESS) {
+            return resultado;
+        }
+    }
 
-    // Ningún child process llega hasta acá. Solo el parent Process. Este se encargará de darle vida
-    // al maestroEspecialista
+    // Ningún child process llega hasta acá. Solo el parent Process.
+    // Este se encargará de darle vida próximamente al maestroEspecialista
     abrirLaLineaTelefonicaParaPedidos();
 
     std::string mensaje = "FabricaDePan: ya están todos laburando. Arranca un poco más tarde el Maestro Especialista\n";
