@@ -14,19 +14,17 @@ int Repartidor::jornadaLaboral() {
         return PARENT_PROCESS;
     }
 
-    // Child process. This is going to continue running from here
     this->crearHandlerParaSIGINT();
 
     abrirCanalesDeComunicacion();
-    // realizar mis tareas
     int resultado = realizarMisTareas();
 
-    // terminar jornada
     resultado = terminarJornada();
     return resultado;
 }
 
 void Repartidor::abrirCanalesDeComunicacion() {
+    
     this->cajasParaEntregar->setearModo( this->cajasParaEntregar->LECTURA );
 
     const std::string nombre = ENTREGADOS_FOLDER + "entregados.txt";
@@ -83,7 +81,7 @@ char* Repartidor::buscarUnPedidoListo() {
         this->logger->unlockLogger();
         exit(-1);
     }
-    this->cajasParaEntregar->leer( (void*) lectura_pedido, LARGO_PEDIDO ); //  * sizeof(char*)
+    this->cajasParaEntregar->leer( (void*) lectura_pedido, LARGO_PEDIDO );
     try {
         this->cajasParaEntregar->unlockPipe();
     } catch(std::string& mensaje) {
@@ -101,6 +99,7 @@ char* Repartidor::buscarUnPedidoListo() {
         return lectura_pedido;
     }
     else {
+        // TODO: borrar iostream
         // std::cout << "Repartidor " << std::to_string(this->getId()) << ": Leí un pedido y era NULO es esto " 
         //         << lectura_pedido << endl;
         free(lectura_pedido);

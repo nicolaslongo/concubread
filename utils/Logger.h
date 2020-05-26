@@ -23,7 +23,6 @@ class Logger {
         ~Logger();
 		int lockLogger();
 		int unlockLogger();
-        // void writeToLogFile(std::string msg);
 		ssize_t writeToLogFile(const char* buffer, const ssize_t buffsize) const;
         void closeFileInThisScope();
 };

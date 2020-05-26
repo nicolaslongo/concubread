@@ -6,15 +6,12 @@
 #include "MaestroPizzero.h"
 #include "Recepcionista.h"
 #include "Repartidor.h"
-// #include "Pipe.h"
 #include "../utils/Logger.h"
 #include "../utils/Configuracion.h"
 
 #include <sched.h>
-// #include <sys/wait.h>   // wait syscall
 using namespace std;
 
-// TODO: esto podría ser el largo de mensajes
 const int TO_READ = 30;
 
 class FabricaDePan {
@@ -39,7 +36,6 @@ class FabricaDePan {
         // d repartidores
         std::vector <Repartidor*> repartidores;
 
-        // guardo los pipes para luego liberar la memoria
         std::vector <Pipe*> pipes;
 
         void abrirLaLineaTelefonicaParaPedidos();

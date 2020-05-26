@@ -39,17 +39,15 @@ int MaestroPizzero::jornadaLaboral() {
     this->crearHandlerParaSIGINT();
 
     abrirCanalesDeComunicacion();
-    // realizar mis tareas
+
     int resultado = realizarMisTareas();
     
-    // terminar jornada
     resultado = terminarJornada();
     return resultado;
 }
 
 int MaestroPizzero::realizarMisTareas() {
 
-    // Acá va la variable que modificaremos usando SIGNALS
     while( this->noEsHoraDeIrse() ) {
 
         bool hayNuevoPedido = buscarUnPedidoNuevo();
@@ -78,27 +76,7 @@ int MaestroPizzero::realizarMisTareas() {
 
 void MaestroPizzero::colocarElPedidoHorneadoEnUnaCaja(int gramajeDeMasaMadre, int tiempoDeCoccion) {
 
-    // try {
-    //     cajasParaEntregar->lockPipe();
-    // } catch(std::string& mensaje) {
-    //     const char* msg = mensaje.c_str();
-    //     this->logger->lockLogger();
-    //     this->logger->writeToLogFile(msg, strlen(msg));
-    //     this->logger->unlockLogger();
-    //     exit(-1);
-    // }
-
     cajasParaEntregar->escribir( (const void*) PEDIDO_PIZZA, strlen(PEDIDO_PIZZA));
-
-    // try {
-    //     entregasMasaMadre->unlockPipe();
-    // } catch(std::string& mensaje) {
-    //     const char* msg = mensaje.c_str();
-    //     this->logger->lockLogger();
-    //     this->logger->writeToLogFile(msg, strlen(msg));
-    //     this->logger->unlockLogger();
-    //     exit(-1);
-    // }
 
     std::string mensaje_recib =  "MaestroPizzero " + std::to_string(this->getId()) +
         ". El pedido de pizza fue horneado con " + std::to_string(gramajeDeMasaMadre) +
@@ -123,9 +101,8 @@ int MaestroPizzero::hornear(int gramajeMasaMadre) {
 
 int MaestroPizzero::definirTiempoDeCoccion(unsigned int seedNumber) {
 
-    // I also use current time to bias seed_number
     std::srand(seedNumber * std::time(0));
-    // TODO: definir estas constantes
+
     int desvio = 1 + (int) (20.0 * std::rand()/(RAND_MAX+1.0) ) + 10;
 
     if (desvio % 3 == 0) {
@@ -143,7 +120,6 @@ int MaestroPizzero::definirTiempoDeCoccion(unsigned int seedNumber) {
 
 int* MaestroPizzero::pedirNuevaRacionDeMasaMadre() {
 
-    // TODO: chequear esto try catch
     this->pedidosMasaMadre->escribir( (const void*) PEDIDO_MM, strlen(PEDIDO_MM));
 
     int* lectura_temporal = (int*) malloc( sizeof(int*) );

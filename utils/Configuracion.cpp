@@ -29,6 +29,9 @@ void Configuracion::leerConfigFile(){
     leerCantidadMaestrosPizzeros();
 
     leerCantidadRepartidores();
+
+    leerArchivoDePedidos();
+    
 }
 
 void Configuracion::leerCantidadRecepcionistas() {
@@ -137,6 +140,31 @@ void Configuracion::leerCantidadRepartidores() {
     free(min_pointer);
 }
 
+void Configuracion::leerArchivoDePedidos() {
+    char* max_pointer = (char*) malloc( MAX_READ * sizeof(char*) );
+    memset(max_pointer, 0, MAX_READ * sizeof(char*));
+
+    char* archivo_pointer = (char*) malloc( MAX_READ * sizeof(char*) );
+    memset(archivo_pointer, 0, MAX_READ * sizeof(char*));
+
+    // Leo el nombre del archivo de pedidos
+    if (fgets(max_pointer, MAX_READ, this->file) != NULL) {
+
+        if (fgets(archivo_pointer, MAX_READ, this->file) != NULL) {
+            this->archivoDePedidos = archivo_pointer;
+
+            std::string mensaje = "Configuracion: " 
+                + std::string(max_pointer)
+                + std::string(archivo_pointer) + ".\n";
+            const char* msg = mensaje.c_str();
+            this->logger->lockLogger();
+            this->logger->writeToLogFile(msg, strlen(msg));
+            this->logger->unlockLogger();
+        }
+    }
+    free(max_pointer);
+}
+
 
 int Configuracion::getCantidadMaestrosPanaderos() {
     return this->cantidadMaestrosPanaderos;
@@ -154,6 +182,12 @@ int Configuracion::getCantidadMaestrosPizzeros() {
     return this->cantidadMaestrosPizzeros;
 }
 
+std::string Configuracion::getArchivoDePedidos() {
+    return std::string(this->archivoDePedidos);
+}
+
 Configuracion::~Configuracion() {
+
+    free(this->archivoDePedidos);
     fclose(this->file);
 }
