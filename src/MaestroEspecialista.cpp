@@ -138,6 +138,7 @@ void MaestroEspecialista::alimentarMasaMadre(int numeroDeRacion){
 int MaestroEspecialista::getRacionDeMasaMadre() {
     MasaMadre* estaRacion = this->masaMadre.at(this->getRacionesConsumidas());
     this->aumentarRacionesConsumidas();
+    estaRacion->setearConsumida();
     return estaRacion->getGramaje();
 }
 
