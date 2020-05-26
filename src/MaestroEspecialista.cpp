@@ -1,18 +1,30 @@
 # include "MaestroEspecialista.h"
 
-MaestroEspecialista::MaestroEspecialista (Logger* logger, int myId, Pipe* pedidosMasaMadre, Pipe* entregasMasaMadre)
-         : Trabajador::Trabajador(logger, myId) {
-    this->pedidosMasaMadre = pedidosMasaMadre;
-    this->entregasMasaMadre = entregasMasaMadre;
+MaestroEspecialista::MaestroEspecialista (Logger* logger, int myId, std::vector<Pipe*> *pipes)
+         : Trabajador::Trabajador(logger, myId, pipes) {
+
+    this->pedidosMasaMadre = NULL;
+    this->entregasMasaMadre = NULL;
 
 }
 
 void MaestroEspecialista::abrirCanalesDeComunicacion() {
 
-    this->pedidosMasaMadre->setearModo( this->pedidosMasaMadre->LECTURA );
-    this->entregasMasaMadre->setearModo( this->entregasMasaMadre->ESCRITURA );
+    for (unsigned int i = 0; i < this->pipes->size() -1; i++) {
+        if (i == PIPE_PEDIDOS_MASA_MADRE) {
+            this->pedidosMasaMadre = this->pipes->at(i);
+            this->pedidosMasaMadre->setearModo( this->pedidosMasaMadre->LECTURA );
+        }
+        if (i == PIPE_ENTREGAS_MASA_MADRE) {
+            this->pedidosMasaMadre = this->pipes->at(i);
+            this->entregasMasaMadre->setearModo( this->entregasMasaMadre->ESCRITURA );
+        }
+        else {
+            this->pipes->at(i)->cerrar();
+        }
+    }   
 
-    const char* mensaje = "MaestroEspecialista: abrí los fifos <entregas_de_MM> y <pedidos_de_MM>\n";
+    const char* mensaje = "MaestroEspecialista: abrí los pipes para entregas y pedidos de Masa Madre.\n";
     this->logger->lockLogger();
     this->logger->writeToLogFile(mensaje, strlen(mensaje));
     this->logger->unlockLogger();

@@ -47,7 +47,7 @@ int Pipe::lockPipe() {
 
 	int resultado_lock = flock(fd, LOCK_EX);
 	if (resultado_lock == -1) {
-		throw "Error lockeando un Pipe. Este es mi fd " + std::to_string(fd);
+		throw "Error lockeando un Pipe. Este es mi fd " + std::to_string(fd) + ".\n";
 	}
 	return resultado_lock;
 }
@@ -62,7 +62,7 @@ int Pipe::unlockPipe() {
 	}
 	int resultado_lock = flock( fd, LOCK_UN);
 	if (resultado_lock == -1) {
-		throw "Error deslockeando un Pipe. Este es mi fd " + std::to_string(fd);
+		throw "Error deslockeando un Pipe. Este es mi fd " + std::to_string(fd) + ".\n";
 	}
 	return resultado_lock;
 }

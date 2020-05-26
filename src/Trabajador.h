@@ -7,6 +7,7 @@
 #include "../utils/SIGINT_Handler.h"
 #include "../utils/SignalHandler.h"
 
+#include <vector>
 
 class Trabajador {
 
@@ -15,13 +16,14 @@ class Trabajador {
     protected:
         Logger* logger;
         int id;
-        
+        std::vector<Pipe*> *pipes;
+
         SIGINT_Handler* sigint_handler;
         int getId();
 
     public:
 
-        Trabajador(Logger* logger, int myId);
+        Trabajador(Logger* logger, int myId, std::vector<Pipe*> *pipes);
         virtual ~Trabajador();
         virtual int jornadaLaboral() = 0;
         virtual int realizarMisTareas() = 0;

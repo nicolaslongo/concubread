@@ -29,8 +29,7 @@ class MaestroPizzero : public Trabajador {
     protected:
 
     public:
-        MaestroPizzero(Logger* logger, int myId, Pipe* pipePedidosDePizza, Pipe* pedidosMasaMadre,
-                                                Pipe* entregasMasaMadre, Pipe* cajasParaEntregar);
+        MaestroPizzero(Logger* logger, int myId, std::vector<Pipe*> *pipes);
         ~MaestroPizzero();
         virtual int jornadaLaboral();
 

@@ -28,9 +28,7 @@ class MaestroPanadero : public Trabajador {
     protected:
 
     public:
-        MaestroPanadero(Logger* logger, int myId, Pipe* pipePedidosDePan, Pipe* pedidosMasaMadre,
-                                                Pipe* entregasMasaMadre,
-                                                Pipe* cajasParaEntregar);
+        MaestroPanadero(Logger* logger, int myId, std::vector<Pipe*> *pipes);
         ~MaestroPanadero();
         virtual int jornadaLaboral();
 

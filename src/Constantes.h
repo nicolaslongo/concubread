@@ -6,6 +6,13 @@
 const int PARENT_PROCESS = 0;
 const int CHILD_PROCESS = 1;
 
+const int PIPE_LISTA_DE_PEDIDOS = 0;
+const int PIPE_PEDIDOS_DE_PAN = 1;
+const int PIPE_PEDIDOS_DE_PIZZA = 2;
+const int PIPE_PEDIDOS_MASA_MADRE = 3;
+const int PIPE_ENTREGAS_MASA_MADRE = 4;
+const int PIPE_CAJAS_PARA_ENTREGAR = 5;
+
 const int PEDIDO_NULO = 0;
 const int PEDIDO_PAN_FLAG = 1;
 const int PEDIDO_PIZZA_FLAG = 2;

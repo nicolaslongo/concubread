@@ -1,22 +1,41 @@
 # include "MaestroPanadero.h"
 
-MaestroPanadero::MaestroPanadero (Logger* logger, int myId, Pipe* pipePedidosDePan,
-            Pipe* pipePedidosMasaMadre, Pipe* pipeEntregasMasaMadre, Pipe* cajasParaEntregar)
-            : Trabajador::Trabajador(logger, myId) {
+MaestroPanadero::MaestroPanadero (Logger* logger, int myId, std::vector<Pipe*> *pipes)
+            : Trabajador::Trabajador(logger, myId, pipes) {
 
-    this->pipePedidosDePan = pipePedidosDePan;
-    this->pedidosMasaMadre = pipePedidosMasaMadre;
-    this->entregasMasaMadre = pipeEntregasMasaMadre;
-    this->cajasParaEntregar = cajasParaEntregar;
+    this->pipePedidosDePan = NULL;
+    this->pedidosMasaMadre = NULL;
+    this->entregasMasaMadre = NULL;
+    this->cajasParaEntregar = NULL;
 }
 
 void MaestroPanadero::abrirCanalesDeComunicacion() {
 
-    this->pipePedidosDePan->setearModo( this->pipePedidosDePan->LECTURA );
-    this->entregasMasaMadre->setearModo( this->entregasMasaMadre->LECTURA );
+    for (unsigned int i = 0; i < this->pipes->size() -1; i++) {
+        if (i == PIPE_PEDIDOS_DE_PAN) {
+            this->pipePedidosDePan = this->pipes->at(i);
+            this->pipePedidosDePan->setearModo( this->pipePedidosDePan->LECTURA );
+        }
+        if (i == PIPE_PEDIDOS_MASA_MADRE) {
+            this->pedidosMasaMadre = this->pipes->at(i);
+            this->pedidosMasaMadre->setearModo( this->pedidosMasaMadre->ESCRITURA );
+        }
+        if (i == PIPE_ENTREGAS_MASA_MADRE) {
+            this->entregasMasaMadre = this->pipes->at(i);
+            this->entregasMasaMadre->setearModo( this->entregasMasaMadre->LECTURA );
+        }
+        if (i == PIPE_CAJAS_PARA_ENTREGAR) {
+            this->cajasParaEntregar = this->pipes->at(i);
+            this->cajasParaEntregar->setearModo( this->cajasParaEntregar->ESCRITURA );
+        }
+        else
+            this->pipes->at(i)->cerrar();
+    }   
 
-    this->pedidosMasaMadre->setearModo( this->pedidosMasaMadre->ESCRITURA );
-    this->cajasParaEntregar->setearModo( this->cajasParaEntregar->ESCRITURA );
+    // this->pipePedidosDePan->setearModo( this->pipePedidosDePan->LECTURA );
+    // this->entregasMasaMadre->setearModo( this->entregasMasaMadre->LECTURA );
+    // this->pedidosMasaMadre->setearModo( this->pedidosMasaMadre->ESCRITURA );
+    // this->cajasParaEntregar->setearModo( this->cajasParaEntregar->ESCRITURA );
 
     std::string std_msg = "MaestroPanadero " + std::to_string(this->getId()) + 
         ": abrí los pipes para recibir pedidos de pan y ponerlos en cajas.\n";

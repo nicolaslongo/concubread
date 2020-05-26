@@ -1,8 +1,9 @@
 # include "Trabajador.h"
 
-Trabajador::Trabajador(Logger* logger, int myId) {
+Trabajador::Trabajador(Logger* logger, int myId, std::vector<Pipe*>* pipes) {
     this->logger = logger;
     this->id = myId;
+    this->pipes = pipes;
     this->sigint_handler = NULL;
 }
 

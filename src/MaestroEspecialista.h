@@ -6,7 +6,6 @@
 
 #include <iostream>
 #include <unistd.h>
-#include <vector>
 
 class MaestroEspecialista : public Trabajador {
 
@@ -35,7 +34,7 @@ class MaestroEspecialista : public Trabajador {
     protected:
 
     public:
-        MaestroEspecialista(Logger* logger, int myId, Pipe* pedidosMasaMadre, Pipe* entregasMasaMadre);
+        MaestroEspecialista(Logger* logger, int myId, std::vector<Pipe*> *pipes);
         ~MaestroEspecialista();
         virtual int jornadaLaboral();
 

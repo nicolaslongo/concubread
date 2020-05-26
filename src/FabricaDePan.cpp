@@ -5,6 +5,7 @@ FabricaDePan::FabricaDePan(Logger* logger, Configuracion* config) {
     this->logger = logger;
     this->config = config;
 
+    // encapsular en abrir pipes //
     Pipe* listaDePedidos = new Pipe();
     this->listaDePedidos = listaDePedidos;
     this->pipes.push_back(listaDePedidos);
@@ -24,39 +25,34 @@ FabricaDePan::FabricaDePan(Logger* logger, Configuracion* config) {
     Pipe* cajasParaEntregar = new Pipe();
     this->pipes.push_back(cajasParaEntregar);
 
+    std::cout << "Este es el largo de pipes " << this->pipes.size() << endl;
+
     // creo al maestroEspecialista
-    maestroEspecialista = new MaestroEspecialista(logger, 0, pedidosMasaMadre, entregasMasaMadre);
+    maestroEspecialista = new MaestroEspecialista(logger, 0, &this->pipes);
 
 
     // creo a los recepcionistas
     int CANT_RECEPCIONISTAS = this->config->getCantidadRecepcionistas();
     for (int i = 0; i < CANT_RECEPCIONISTAS; i++) {
-        this->recepcionistas.push_back(new Recepcionista(logger, i, listaDePedidos,
-                                        pedidosTelefonicosDePan, pedidosTelefonicosDePizza));
+        this->recepcionistas.push_back(new Recepcionista(logger, i, &this->pipes));
     }
     
     // creo a los maestros panaderos
     int CANT_PANADEROS = this->config->getCantidadMaestrosPanaderos();
     for (int i = 0; i < CANT_PANADEROS; i++) {
-        maestrosPanaderos.push_back(new MaestroPanadero(logger, i, pedidosTelefonicosDePan,
-                                                                    pedidosMasaMadre,
-                                                                    entregasMasaMadre,
-                                                                    cajasParaEntregar));
+        maestrosPanaderos.push_back(new MaestroPanadero(logger, i, &this->pipes));
     }
 
     // creo a los maestros pizzeros
     int CANT_PIZZEROS = this->config->getCantidadMaestrosPizzeros();
     for (int i = 0; i < CANT_PIZZEROS; i++) {
-        maestrosPizzeros.push_back(new MaestroPizzero(logger, i, pedidosTelefonicosDePizza, 
-                                                                    pedidosMasaMadre,
-                                                                    entregasMasaMadre,
-                                                                    cajasParaEntregar));
+        maestrosPizzeros.push_back(new MaestroPizzero(logger, i, &this->pipes));
     }
 
     //creo al delivery
     int CANT_REPARTIDORES = this->config->getCantidadRepartidores();
     for (int i = 0; i < CANT_REPARTIDORES; i++) {
-        repartidores.push_back(new Repartidor(logger, i, cajasParaEntregar));
+        repartidores.push_back(new Repartidor(logger, i, &this->pipes));
     }
 
     std::string mensaje = "FabricaDePan: creé " + std::to_string(CANT_PANADEROS) 

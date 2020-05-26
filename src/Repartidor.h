@@ -20,7 +20,7 @@ class Repartidor : public Trabajador {
 
     public:
 
-        Repartidor(Logger* logger, int myId, Pipe* cajasParaEntregar);
+        Repartidor(Logger* logger, int myId, std::vector<Pipe*> *pipes);
         ~Repartidor();
         int jornadaLaboral();
         int realizarMisTareas();

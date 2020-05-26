@@ -1,13 +1,46 @@
 # include "Recepcionista.h"
 
-Recepcionista::Recepcionista(Logger* logger, int myId, Pipe* listaDePedidos,
-                Pipe* pedidosTelefonicosDePan, Pipe* pedidosTelefonicosDePizza) : Trabajador::Trabajador(logger, myId) {
+Recepcionista::Recepcionista(Logger* logger, int myId, std::vector<Pipe*> *pipes) 
+        : Trabajador::Trabajador(logger, myId, pipes) {
 
-    this->pipeLectura = listaDePedidos;
-    this->pipeEscrituraPanes = pedidosTelefonicosDePan;
-    this->pipeEscrituraPizzas = pedidosTelefonicosDePizza;
+    this->pipeLectura = NULL;
+    this->pipeEscrituraPanes = NULL;
+    this->pipeEscrituraPizzas = NULL;
 
 }
+
+void Recepcionista::abrirCanalesDeComunicacion() {
+
+    for (unsigned int i = 0; i < this->pipes->size() -1; i++) {
+        if (i == PIPE_LISTA_DE_PEDIDOS) {
+            this->pipeLectura = this->pipes->at(i);
+            this->pipeLectura->setearModo( this->pipeLectura->LECTURA );
+        }
+        if (i == PIPE_PEDIDOS_DE_PAN) {
+            this->pipeEscrituraPanes = this->pipes->at(i);
+            this->pipeEscrituraPanes->setearModo( this->pipeEscrituraPanes->ESCRITURA );
+        }
+        if (i == PIPE_PEDIDOS_DE_PIZZA) {
+            this->pipeEscrituraPizzas = this->pipes->at(i);
+            this->pipeEscrituraPizzas->setearModo( this->pipeEscrituraPizzas->ESCRITURA );
+        }
+        else
+            this->pipes->at(i)->cerrar();
+    }   
+
+    // this->pipeEscrituraPanes->setearModo( this->pipeEscrituraPanes->ESCRITURA );
+    // this->pipeEscrituraPizzas->setearModo( this->pipeEscrituraPizzas->ESCRITURA );
+    // this->pipeLectura->setearModo( this->pipeLectura->LECTURA );
+    
+    std::string mensaje = "Recepcionista " + std::to_string(this->getId()) + 
+        ": abrí el pipe para escritura y lectura\n";
+    const char* msg = mensaje.c_str();
+    this->logger->lockLogger();
+    this->logger->writeToLogFile(msg, strlen(msg));
+    this->logger->unlockLogger();
+
+}
+
 
 int Recepcionista::jornadaLaboral() {
 
@@ -28,20 +61,6 @@ int Recepcionista::jornadaLaboral() {
     return resultado;
 }
 
-void Recepcionista::abrirCanalesDeComunicacion() {
-
-    this->pipeEscrituraPanes->setearModo( this->pipeEscrituraPanes->ESCRITURA );
-    this->pipeEscrituraPizzas->setearModo( this->pipeEscrituraPizzas->ESCRITURA );
-    this->pipeLectura->setearModo( this->pipeLectura->LECTURA );
-    
-    std::string mensaje = "Recepcionista " + std::to_string(this->getId()) + 
-        ": abrí el pipe para escritura y lectura\n";
-    const char* msg = mensaje.c_str();
-    this->logger->lockLogger();
-    this->logger->writeToLogFile(msg, strlen(msg));
-    this->logger->unlockLogger();
-
-}
 
 int Recepcionista::atenderElTelefono() {
 

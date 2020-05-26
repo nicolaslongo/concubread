@@ -21,8 +21,7 @@ class Recepcionista : public Trabajador {
 
     public:
 
-        Recepcionista(Logger* logger, int myId, Pipe* listaDePedidos,
-                        Pipe* pedidosTelefonicosDePan, Pipe* pedidosTelefonicosDePizza);
+        Recepcionista(Logger* logger, int myId, std::vector<Pipe*> *pipes);
         ~Recepcionista();
         int jornadaLaboral();
         int realizarMisTareas();

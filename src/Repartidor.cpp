@@ -1,9 +1,33 @@
 #include "Repartidor.h"
 
-Repartidor::Repartidor(Logger* logger, int myId, Pipe* cajasParaEntregar) : 
-            Trabajador::Trabajador(logger, myId) {
+Repartidor::Repartidor(Logger* logger, int myId, std::vector<Pipe*> *pipes) : 
+            Trabajador::Trabajador(logger, myId, pipes) {
     
-    this->cajasParaEntregar = cajasParaEntregar;
+    this->cajasParaEntregar = NULL;
+}
+
+void Repartidor::abrirCanalesDeComunicacion() {
+    
+    for (unsigned int i = 0; i < this->pipes->size() -1; i++) {
+        if (i == PIPE_CAJAS_PARA_ENTREGAR) {
+            this->cajasParaEntregar = this->pipes->at(i);
+            this->cajasParaEntregar->setearModo( this->cajasParaEntregar->LECTURA );
+        }
+        else
+            this->pipes->at(i)->cerrar();
+    }   
+
+    // this->cajasParaEntregar->setearModo( this->cajasParaEntregar->LECTURA );
+
+    const std::string nombre = ENTREGADOS_FOLDER + "entregados.txt";
+    this->entregados = new LockFile( nombre );
+
+    std::string std_msg = "Repartidor " + std::to_string(this->getId()) + 
+        ": abrí el pipe para recibir las cajas y así poder entregarlas.\n";
+    const char* mensaje = std_msg.c_str();
+    this->logger->lockLogger();
+    this->logger->writeToLogFile(mensaje, strlen(mensaje));
+    this->logger->unlockLogger();
 }
 
 int Repartidor::jornadaLaboral() {
@@ -21,21 +45,6 @@ int Repartidor::jornadaLaboral() {
 
     resultado = terminarJornada();
     return resultado;
-}
-
-void Repartidor::abrirCanalesDeComunicacion() {
-    
-    this->cajasParaEntregar->setearModo( this->cajasParaEntregar->LECTURA );
-
-    const std::string nombre = ENTREGADOS_FOLDER + "entregados.txt";
-    this->entregados = new LockFile( nombre );
-
-    std::string std_msg = "Repartidor " + std::to_string(this->getId()) + 
-        ": abrí el pipe para recibir las cajas para entregarlas\n";
-    const char* mensaje = std_msg.c_str();
-    this->logger->lockLogger();
-    this->logger->writeToLogFile(mensaje, strlen(mensaje));
-    this->logger->unlockLogger();
 }
 
 int Repartidor::realizarMisTareas() {
