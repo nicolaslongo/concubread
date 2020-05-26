@@ -13,7 +13,8 @@ class MaestroEspecialista : public Trabajador {
 
         Pipe* pedidosMasaMadre;
         Pipe* entregasMasaMadre;
-
+        std::vector <Pipe*> *pipes;
+        
         std::vector <MasaMadre*> masaMadre;
         int racionesConsumidas = 0;
         

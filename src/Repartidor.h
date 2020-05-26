@@ -12,7 +12,8 @@ class Repartidor : public Trabajador {
 
         Pipe* cajasParaEntregar;
         LockFile* entregados;
-
+        std::vector <Pipe*> *pipes;
+        
         char* buscarUnPedidoListo();
         void entregarPedido(char* pedidoListo);
 

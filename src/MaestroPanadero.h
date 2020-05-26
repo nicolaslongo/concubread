@@ -15,6 +15,7 @@ class MaestroPanadero : public Trabajador {
         Pipe* entregasMasaMadre;
         Pipe* pipePedidosDePan;
         Pipe* cajasParaEntregar;
+        std::vector <Pipe*> *pipes;
 
         virtual int realizarMisTareas();
         virtual int terminarJornada();

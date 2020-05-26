@@ -16,7 +16,7 @@ class Trabajador {
     protected:
         Logger* logger;
         int id;
-        std::vector<Pipe*> *pipes;
+        // std::vector<Pipe*> pipes;
 
         SIGINT_Handler* sigint_handler;
         int getId();

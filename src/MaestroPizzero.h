@@ -15,7 +15,8 @@ class MaestroPizzero : public Trabajador {
         Pipe* entregasMasaMadre;
         Pipe* pipePedidosDePizza;
         Pipe* cajasParaEntregar;
-
+        std::vector <Pipe*> *pipes;
+        
         virtual int realizarMisTareas();
         virtual int terminarJornada();
         virtual void abrirCanalesDeComunicacion();

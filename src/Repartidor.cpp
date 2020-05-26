@@ -2,7 +2,7 @@
 
 Repartidor::Repartidor(Logger* logger, int myId, std::vector<Pipe*> *pipes) : 
             Trabajador::Trabajador(logger, myId, pipes) {
-    
+    this->pipes = pipes;
     this->cajasParaEntregar = NULL;
 }
 

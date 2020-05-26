@@ -3,6 +3,7 @@
 MaestroPizzero::MaestroPizzero (Logger* logger, int myId, std::vector<Pipe*> *pipes) 
         : Trabajador::Trabajador(logger, myId, pipes) {
 
+    this->pipes = pipes;
     this->pipePedidosDePizza = NULL;
     this->pedidosMasaMadre = NULL;
     this->entregasMasaMadre = NULL;

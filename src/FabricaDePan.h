@@ -9,6 +9,8 @@
 #include "../utils/Logger.h"
 #include "../utils/Configuracion.h"
 
+#include <algorithm> // for copy() and assign() 
+#include <iterator> // for back_inserter
 #include <sched.h>
 using namespace std;
 

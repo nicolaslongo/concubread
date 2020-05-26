@@ -6,53 +6,56 @@ FabricaDePan::FabricaDePan(Logger* logger, Configuracion* config) {
     this->config = config;
 
     // encapsular en abrir pipes //
+    // la otra es crear un vector acá nuevo y usar ese, a ver qué pasa
+    std::vector <Pipe*> *vector_de_pipes = (std::vector <Pipe*>*) malloc( sizeof(std::vector<Pipe*>) *
+                                                                         (PIPE_CAJAS_PARA_ENTREGAR+1) );
+
     Pipe* listaDePedidos = new Pipe();
     this->listaDePedidos = listaDePedidos;
-    this->pipes.push_back(listaDePedidos);
+    vector_de_pipes->push_back(listaDePedidos);
 
     Pipe* pedidosTelefonicosDePan = new Pipe();
-    this->pipes.push_back(pedidosTelefonicosDePan);
+    vector_de_pipes->push_back(pedidosTelefonicosDePan);
 
     Pipe* pedidosTelefonicosDePizza = new Pipe();
-    this->pipes.push_back(pedidosTelefonicosDePizza);
+    vector_de_pipes->push_back(pedidosTelefonicosDePizza);
 
     Pipe* pedidosMasaMadre = new Pipe();
-    this->pipes.push_back(pedidosMasaMadre);
+    vector_de_pipes->push_back(pedidosMasaMadre);
 
     Pipe* entregasMasaMadre = new Pipe();
-    this->pipes.push_back(entregasMasaMadre);
+    vector_de_pipes->push_back(entregasMasaMadre);
 
     Pipe* cajasParaEntregar = new Pipe();
-    this->pipes.push_back(cajasParaEntregar);
+    vector_de_pipes->push_back(cajasParaEntregar);
 
-    std::cout << "Este es el largo de pipes " << this->pipes.size() << endl;
+    std::cout << "Este es el largo de pipes " << vector_de_pipes->size() << endl;
 
     // creo al maestroEspecialista
-    maestroEspecialista = new MaestroEspecialista(logger, 0, &this->pipes);
-
+    maestroEspecialista = new MaestroEspecialista(logger, 0, vector_de_pipes);
 
     // creo a los recepcionistas
     int CANT_RECEPCIONISTAS = this->config->getCantidadRecepcionistas();
     for (int i = 0; i < CANT_RECEPCIONISTAS; i++) {
-        this->recepcionistas.push_back(new Recepcionista(logger, i, &this->pipes));
+        this->recepcionistas.push_back(new Recepcionista(logger, i, vector_de_pipes));
     }
     
     // creo a los maestros panaderos
     int CANT_PANADEROS = this->config->getCantidadMaestrosPanaderos();
     for (int i = 0; i < CANT_PANADEROS; i++) {
-        maestrosPanaderos.push_back(new MaestroPanadero(logger, i, &this->pipes));
+        maestrosPanaderos.push_back(new MaestroPanadero(logger, i, vector_de_pipes));
     }
 
     // creo a los maestros pizzeros
     int CANT_PIZZEROS = this->config->getCantidadMaestrosPizzeros();
     for (int i = 0; i < CANT_PIZZEROS; i++) {
-        maestrosPizzeros.push_back(new MaestroPizzero(logger, i, &this->pipes));
+        maestrosPizzeros.push_back(new MaestroPizzero(logger, i, vector_de_pipes));
     }
 
     //creo al delivery
     int CANT_REPARTIDORES = this->config->getCantidadRepartidores();
     for (int i = 0; i < CANT_REPARTIDORES; i++) {
-        repartidores.push_back(new Repartidor(logger, i, &this->pipes));
+        repartidores.push_back(new Repartidor(logger, i, vector_de_pipes));
     }
 
     std::string mensaje = "FabricaDePan: creé " + std::to_string(CANT_PANADEROS) 

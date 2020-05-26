@@ -3,6 +3,7 @@
 MaestroPanadero::MaestroPanadero (Logger* logger, int myId, std::vector<Pipe*> *pipes)
             : Trabajador::Trabajador(logger, myId, pipes) {
 
+    this->pipes = pipes;
     this->pipePedidosDePan = NULL;
     this->pedidosMasaMadre = NULL;
     this->entregasMasaMadre = NULL;

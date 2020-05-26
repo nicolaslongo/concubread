@@ -14,7 +14,8 @@ class Recepcionista : public Trabajador {
         Pipe* pipeEscrituraPanes;
         Pipe* pipeEscrituraPizzas;
         Pipe* pipeLectura;
-
+        std::vector <Pipe*> *pipes;
+        
         int atenderElTelefono();
 
     protected:

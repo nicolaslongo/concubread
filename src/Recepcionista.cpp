@@ -3,6 +3,7 @@
 Recepcionista::Recepcionista(Logger* logger, int myId, std::vector<Pipe*> *pipes) 
         : Trabajador::Trabajador(logger, myId, pipes) {
 
+    this->pipes = pipes;
     this->pipeLectura = NULL;
     this->pipeEscrituraPanes = NULL;
     this->pipeEscrituraPizzas = NULL;

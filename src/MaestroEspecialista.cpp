@@ -2,7 +2,8 @@
 
 MaestroEspecialista::MaestroEspecialista (Logger* logger, int myId, std::vector<Pipe*> *pipes)
          : Trabajador::Trabajador(logger, myId, pipes) {
-
+    
+    this->pipes = pipes;
     this->pedidosMasaMadre = NULL;
     this->entregasMasaMadre = NULL;
 
@@ -24,7 +25,7 @@ void MaestroEspecialista::abrirCanalesDeComunicacion() {
         }
     }   
 
-    const char* mensaje = "MaestroEspecialista: abrí los pipes para entregas y pedidos de Masa Madre.\n";
+    const char* mensaje = "MaestroEspecialista: abrí los pipes para entregas y pedidos de Masa Madre->\n";
     this->logger->lockLogger();
     this->logger->writeToLogFile(mensaje, strlen(mensaje));
     this->logger->unlockLogger();
