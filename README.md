@@ -2,6 +2,11 @@
 Primer proyecto de la materia 75.59 - Técnicas de Programación Concurrente I
 Nicolás Longo - 98271
 
+En la carpeta root se encontrarán el informe y una carpeta images en la que se encuentran los diagramas del Informe (para poder consultarlos también por fuera).
+Luego, en la carpeta ConcuBread se encuentra el código propiamente dicho.
+A continuación, la documentación
+
+
 # Documentación
 
 ## Comandos para compilar el programa:
