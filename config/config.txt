@@ -1,10 +1,10 @@
 Cantidad de Recepcionistas
-3
+2
 Cantidad de Maestros Panaderos
-3
+1
 Cantidad de Maestros Pizzeros
-3
+1
 Cantidad de Repartidores
-3
+1
 Archivo de pedidos
-pedidosEstres01.txt
+pedidosCorto.txt
