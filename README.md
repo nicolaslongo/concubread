@@ -12,7 +12,13 @@ Nicolás Longo - 98271
 
 ### Comandos para correr el programa:
 
-Este ejecutable no recibe parámetros. Utiliza un archivo de configuración para definirlos que se encuentra en /config/ y se llama config.txt
+Este ejecutable no recibe parámetros. Utiliza un archivo de configuración para definirlos. Este se encuentra en '/config/', se llama 'config.txt' y permite setear los siguientes parámetros:
+	-	Cantidad de Recepcionistas
+	-	Cantidad de Maestros Panaderos
+	-	Cantidad de Maestros Pizzeros
+	-	Cantidad de Repartidores
+	-	Archivo de pedidos (este archivo debe colocarse en el directorio '/pedidos/'')
+
 
 ```./ConcuBread```
 
@@ -23,7 +29,7 @@ Si se quiere ejecutar el chequeo de memoria con valgrind:
 
 ### Archivos de prueba:
 - pedidosCorto.txt:
-	-	Son 5 pedidos en total.
+	-	Son 5 pedidos en total
 	-	Pedidos de panes: 3
 	-	Pedidos de pizza: 2
 
@@ -42,10 +48,13 @@ Si se quiere ejecutar el chequeo de memoria con valgrind:
 	-	Pedidos de panes: 504
 	-	Pedidos de pizza: 546
 
-En todos los casos los archivos de pedidos deben encontrarse en el path '/pedidos/'
+En todos los casos, como ya se mencionó, el archivo de pedidos debe encontrarse en el path '/pedidos/'
 
 ### Lista de pedidos procesados (archivo de salida):
-La salida para todos los archivos se encuentra en la carpeta '/entregados/' bajo el nombre de 'entregados.txt'
+La salida para todos los archivos se encuentra en el directorio '/entregados/' bajo el nombre de 'entregados.txt'
+
+### Archivos de log:
+Los archivos de log se almacenan en el directorio '/logfiles/' y poseen en su nombre el timestamp correspondiente al inicio de la ejecución.
 
 Latex project (overleaf) link to share and edit:
 https://es.overleaf.com/1532886356kxcxmtrhcvsf
