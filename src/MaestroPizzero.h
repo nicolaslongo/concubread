@@ -11,10 +11,6 @@ const int TIEMPO_COCCION_ESTANDAR_PIZZA = 2;
 class MaestroPizzero : public Trabajador {
 
     private:
-        Pipe* pedidosMasaMadre;
-        Pipe* entregasMasaMadre;
-        Pipe* pipePedidosDePizza;
-        Pipe* cajasParaEntregar;
 
         virtual int realizarMisTareas();
         virtual int terminarJornada();
@@ -29,8 +25,9 @@ class MaestroPizzero : public Trabajador {
     protected:
 
     public:
-        MaestroPizzero(Logger* logger, int myId, Pipe* pipePedidosDePizza, Pipe* pedidosMasaMadre,
-                                                Pipe* entregasMasaMadre, Pipe* cajasParaEntregar);
+        MaestroPizzero(Logger* logger, int myId, Pipe* listaDePedidos, Pipe* pedidosTelefonicosDePan,
+                            Pipe* pedidosTelefonicosDePizza, Pipe* entregasMasaMadre, Pipe* pedidosMasaMadre,
+                            Pipe* cajasParaEntregar);
         ~MaestroPizzero();
         virtual int jornadaLaboral();
 

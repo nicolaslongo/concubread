@@ -1,17 +1,19 @@
 # include "MaestroPizzero.h"
 
-MaestroPizzero::MaestroPizzero (Logger* logger, int myId, Pipe* pipePedidosDePizza,
-            Pipe* pipePedidosMasaMadre, Pipe* pipeEntregasMasaMadre, Pipe* cajasParaEntregar) : Trabajador::Trabajador(logger, myId) {
-
-    this->pipePedidosDePizza = pipePedidosDePizza;
-    this->pedidosMasaMadre = pipePedidosMasaMadre;
-    this->entregasMasaMadre = pipeEntregasMasaMadre;
-    this->cajasParaEntregar = cajasParaEntregar;
+MaestroPizzero::MaestroPizzero (Logger* logger, int myId, Pipe* listaDePedidos, Pipe* pedidosTelefonicosDePan,
+                Pipe* pedidosTelefonicosDePizza, Pipe* entregasMasaMadre, Pipe* pedidosMasaMadre,
+                Pipe* cajasParaEntregar)
+                : Trabajador::Trabajador(logger, myId, listaDePedidos, pedidosTelefonicosDePan, pedidosTelefonicosDePizza,
+                entregasMasaMadre, pedidosMasaMadre, cajasParaEntregar)  {
+                
 }
 
 void MaestroPizzero::abrirCanalesDeComunicacion() {
 
-    this->pipePedidosDePizza->setearModo( this->pipePedidosDePizza->LECTURA );
+    this->pedidosTelefonicosDePan->cerrar();
+    this->listaDePedidos->cerrar();
+
+    this->pedidosTelefonicosDePizza->setearModo( this->pedidosTelefonicosDePizza->LECTURA );
     this->entregasMasaMadre->setearModo( this->entregasMasaMadre->LECTURA );
 
     this->pedidosMasaMadre->setearModo( this->pedidosMasaMadre->ESCRITURA );
@@ -152,7 +154,7 @@ bool MaestroPizzero::buscarUnPedidoNuevo() {
     memset(lectura_pedido, 0, strlen(PEDIDO_PIZZA) * sizeof(char*));
 
     try {
-        this->pipePedidosDePizza->lockPipe();
+        this->pedidosTelefonicosDePizza->lockPipe();
     } catch(std::string& mensaje) {
         const char* msg = mensaje.c_str();
         this->logger->lockLogger();
@@ -160,9 +162,9 @@ bool MaestroPizzero::buscarUnPedidoNuevo() {
         this->logger->unlockLogger();
         exit(-1);
     }
-    this->pipePedidosDePizza->leer((void*) lectura_pedido, strlen(PEDIDO_PIZZA));
+    this->pedidosTelefonicosDePizza->leer((void*) lectura_pedido, strlen(PEDIDO_PIZZA));
     try {
-        this->pipePedidosDePizza->unlockPipe();
+        this->pedidosTelefonicosDePizza->unlockPipe();
     } catch(std::string& mensaje) {
         const char* msg = mensaje.c_str();
         this->logger->lockLogger();
@@ -178,7 +180,7 @@ bool MaestroPizzero::buscarUnPedidoNuevo() {
 
 int MaestroPizzero::terminarJornada() {
 
-    this->pipePedidosDePizza->cerrar();
+    this->pedidosTelefonicosDePizza->cerrar();
 
     this->entregasMasaMadre->cerrar();
 

@@ -15,13 +15,23 @@ class Trabajador {
     protected:
         Logger* logger;
         int id;
+
+        Pipe* pedidosMasaMadre;
+        Pipe* entregasMasaMadre;
+        Pipe* listaDePedidos;
+        Pipe* pedidosTelefonicosDePan;
+        Pipe* pedidosTelefonicosDePizza;
+        Pipe* cajasParaEntregar;
+
         
         SIGINT_Handler* sigint_handler;
         int getId();
 
     public:
 
-        Trabajador(Logger* logger, int myId);
+        Trabajador(Logger* logger, int myId, Pipe* listaDePedidos, Pipe* pedidosTelefonicosDePan,
+                    Pipe* pedidosTelefonicosDePizza, Pipe* entregasMasaMadre, Pipe* pedidosMasaMadre,
+                    Pipe* cajasParaEntregar);
         virtual ~Trabajador();
         virtual int jornadaLaboral() = 0;
         virtual int realizarMisTareas() = 0;

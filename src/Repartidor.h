@@ -10,7 +10,6 @@ class Repartidor : public Trabajador {
 
     private:
 
-        Pipe* cajasParaEntregar;
         LockFile* entregados;
 
         char* buscarUnPedidoListo();
@@ -20,7 +19,9 @@ class Repartidor : public Trabajador {
 
     public:
 
-        Repartidor(Logger* logger, int myId, Pipe* cajasParaEntregar);
+        Repartidor(Logger* logger, int myId, Pipe* listaDePedidos, Pipe* pedidosTelefonicosDePan,
+                            Pipe* pedidosTelefonicosDePizza, Pipe* entregasMasaMadre, Pipe* pedidosMasaMadre,
+                            Pipe* cajasParaEntregar);
         ~Repartidor();
         int jornadaLaboral();
         int realizarMisTareas();

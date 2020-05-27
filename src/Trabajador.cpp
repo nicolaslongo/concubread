@@ -1,8 +1,18 @@
 # include "Trabajador.h"
 
-Trabajador::Trabajador(Logger* logger, int myId) {
+Trabajador::Trabajador(Logger* logger, int myId, Pipe* listaDePedidos, Pipe* pedidosTelefonicosDePan,
+                Pipe* pedidosTelefonicosDePizza, Pipe* entregasMasaMadre, Pipe* pedidosMasaMadre,
+                Pipe* cajasParaEntregar) {
     this->logger = logger;
     this->id = myId;
+
+    this->pedidosMasaMadre = pedidosMasaMadre;
+    this->entregasMasaMadre = entregasMasaMadre;
+    this->listaDePedidos = listaDePedidos;
+    this->pedidosTelefonicosDePan = pedidosTelefonicosDePan;
+    this->pedidosTelefonicosDePizza = pedidosTelefonicosDePizza;
+    this->cajasParaEntregar = cajasParaEntregar;
+
     this->sigint_handler = NULL;
 }
 
