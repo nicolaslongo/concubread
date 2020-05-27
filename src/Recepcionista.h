@@ -3,8 +3,6 @@
 
 #include "Trabajador.h"
 
-#include <iostream>
-
 #define PEDIDOS_FILE_FOLDER "pedidos/"
 
 class Recepcionista : public Trabajador {

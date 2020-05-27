@@ -80,9 +80,6 @@ int Recepcionista::atenderElTelefono() {
         return PEDIDO_PIZZA_FLAG;
     }
     else {
-        // TODO: borrar iostream
-        // std::cout << "Recepcionista " << std::to_string(this->getId()) << ": Leí un pedido y no sé qué era " 
-        //         << lectura_pedido << endl;
         free(lectura_pedido);
         return PEDIDO_NULO;
     }
