@@ -1,9 +1,11 @@
 #include "Repartidor.h"
 
-Repartidor::Repartidor(Logger* logger, int myId, Pipe* cajasParaEntregar) : 
-            Trabajador::Trabajador(logger, myId) {
+Repartidor::Repartidor(Logger* logger, int myId, Pipe* listaDePedidos, Pipe* pedidosTelefonicosDePan,
+                Pipe* pedidosTelefonicosDePizza, Pipe* entregasMasaMadre, Pipe* pedidosMasaMadre,
+                Pipe* cajasParaEntregar) : Trabajador::Trabajador(logger, myId, listaDePedidos,
+                pedidosTelefonicosDePan, pedidosTelefonicosDePizza, entregasMasaMadre, pedidosMasaMadre,
+                cajasParaEntregar) {
     
-    this->cajasParaEntregar = cajasParaEntregar;
 }
 
 int Repartidor::jornadaLaboral() {
@@ -25,6 +27,13 @@ int Repartidor::jornadaLaboral() {
 
 void Repartidor::abrirCanalesDeComunicacion() {
     
+    this->pedidosMasaMadre->cerrar();
+    this->entregasMasaMadre->cerrar();
+    this->pedidosTelefonicosDePan->cerrar();
+    this->pedidosTelefonicosDePizza->cerrar();
+    this->listaDePedidos->cerrar();
+
+
     this->cajasParaEntregar->setearModo( this->cajasParaEntregar->LECTURA );
 
     const std::string nombre = ENTREGADOS_FOLDER + "entregados.txt";

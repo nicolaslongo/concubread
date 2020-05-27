@@ -11,18 +11,15 @@ class Recepcionista : public Trabajador {
 
     private:
         
-        Pipe* pipeEscrituraPanes;
-        Pipe* pipeEscrituraPizzas;
-        Pipe* pipeLectura;
-
         int atenderElTelefono();
 
     protected:
 
     public:
 
-        Recepcionista(Logger* logger, int myId, Pipe* listaDePedidos,
-                        Pipe* pedidosTelefonicosDePan, Pipe* pedidosTelefonicosDePizza);
+        Recepcionista(Logger* logger, int myId, Pipe* listaDePedidos, Pipe* pedidosTelefonicosDePan,
+                            Pipe* pedidosTelefonicosDePizza, Pipe* entregasMasaMadre, Pipe* pedidosMasaMadre,
+                            Pipe* cajasParaEntregar);
         ~Recepcionista();
         int jornadaLaboral();
         int realizarMisTareas();

@@ -1,18 +1,19 @@
 # include "MaestroPanadero.h"
 
-MaestroPanadero::MaestroPanadero (Logger* logger, int myId, Pipe* pipePedidosDePan,
-            Pipe* pipePedidosMasaMadre, Pipe* pipeEntregasMasaMadre, Pipe* cajasParaEntregar)
-            : Trabajador::Trabajador(logger, myId) {
+MaestroPanadero::MaestroPanadero (Logger* logger, int myId, Pipe* listaDePedidos, Pipe* pedidosTelefonicosDePan,
+                Pipe* pedidosTelefonicosDePizza, Pipe* entregasMasaMadre, Pipe* pedidosMasaMadre,
+                Pipe* cajasParaEntregar)
+                : Trabajador::Trabajador(logger, myId, listaDePedidos, pedidosTelefonicosDePan, pedidosTelefonicosDePizza,
+                entregasMasaMadre, pedidosMasaMadre, cajasParaEntregar)  {
 
-    this->pipePedidosDePan = pipePedidosDePan;
-    this->pedidosMasaMadre = pipePedidosMasaMadre;
-    this->entregasMasaMadre = pipeEntregasMasaMadre;
-    this->cajasParaEntregar = cajasParaEntregar;
 }
 
 void MaestroPanadero::abrirCanalesDeComunicacion() {
 
-    this->pipePedidosDePan->setearModo( this->pipePedidosDePan->LECTURA );
+    this->pedidosTelefonicosDePizza->cerrar();
+    this->listaDePedidos->cerrar();
+
+    this->pedidosTelefonicosDePan->setearModo( this->pedidosTelefonicosDePan->LECTURA );
     this->entregasMasaMadre->setearModo( this->entregasMasaMadre->LECTURA );
 
     this->pedidosMasaMadre->setearModo( this->pedidosMasaMadre->ESCRITURA );
@@ -127,7 +128,7 @@ bool MaestroPanadero::buscarUnPedidoNuevo() {
     memset(lectura_pedido, 0, strlen(PEDIDO_PAN) * sizeof(char*));
 
     try {
-        pipePedidosDePan->lockPipe();
+        pedidosTelefonicosDePan->lockPipe();
     } catch(std::string& mensaje) {
         const char* msg = mensaje.c_str();
         this->logger->lockLogger();
@@ -135,9 +136,9 @@ bool MaestroPanadero::buscarUnPedidoNuevo() {
         this->logger->unlockLogger();
         exit(-1);
     }
-    pipePedidosDePan->leer((void*) lectura_pedido, strlen(PEDIDO_PAN));
+    pedidosTelefonicosDePan->leer((void*) lectura_pedido, strlen(PEDIDO_PAN));
     try {
-        pipePedidosDePan->unlockPipe();
+        pedidosTelefonicosDePan->unlockPipe();
     } catch(std::string& mensaje) {
         const char* msg = mensaje.c_str();
         this->logger->lockLogger();
@@ -153,7 +154,7 @@ bool MaestroPanadero::buscarUnPedidoNuevo() {
 
 int MaestroPanadero::terminarJornada() {
 
-    this->pipePedidosDePan->cerrar();
+    this->pedidosTelefonicosDePan->cerrar();
 
     this->pedidosMasaMadre->cerrar();
 

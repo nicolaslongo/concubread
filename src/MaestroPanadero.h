@@ -11,10 +11,6 @@ const int TIEMPO_COCCION_ESTANDAR_PAN = 1;
 class MaestroPanadero : public Trabajador {
 
     private:
-        Pipe* pedidosMasaMadre;
-        Pipe* entregasMasaMadre;
-        Pipe* pipePedidosDePan;
-        Pipe* cajasParaEntregar;
 
         virtual int realizarMisTareas();
         virtual int terminarJornada();
@@ -28,9 +24,9 @@ class MaestroPanadero : public Trabajador {
     protected:
 
     public:
-        MaestroPanadero(Logger* logger, int myId, Pipe* pipePedidosDePan, Pipe* pedidosMasaMadre,
-                                                Pipe* entregasMasaMadre,
-                                                Pipe* cajasParaEntregar);
+        MaestroPanadero(Logger* logger, int myId, Pipe* listaDePedidos, Pipe* pedidosTelefonicosDePan,
+                        Pipe* pedidosTelefonicosDePizza, Pipe* entregasMasaMadre, Pipe* pedidosMasaMadre,
+                        Pipe* cajasParaEntregar);
         ~MaestroPanadero();
         virtual int jornadaLaboral();
 

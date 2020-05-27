@@ -1,19 +1,19 @@
 # include "MaestroEspecialista.h"
 
 MaestroEspecialista::MaestroEspecialista (Logger* logger, int myId, Pipe* listaDePedidos, Pipe* pedidosTelefonicosDePan,
-                            Pipe* pedidosTelefonicosDePizza, Pipe* entregasMasaMadre, Pipe* pedidosMasaMadre,
-                            Pipe* cajasParaEntregar)
-         : Trabajador::Trabajador(logger, myId) {
-    
-    this->pipes = {listaDePedidos, pedidosTelefonicosDePan, pedidosTelefonicosDePizza,
-                    entregasMasaMadre, pedidosMasaMadre, cajasParaEntregar};
-                    
-    this->pedidosMasaMadre = NULL;
-    this->entregasMasaMadre = NULL;
+                Pipe* pedidosTelefonicosDePizza, Pipe* entregasMasaMadre, Pipe* pedidosMasaMadre,
+                Pipe* cajasParaEntregar)
+                : Trabajador::Trabajador(logger, myId, listaDePedidos, pedidosTelefonicosDePan, pedidosTelefonicosDePizza,
+                entregasMasaMadre, pedidosMasaMadre, cajasParaEntregar) {    
 
 }
 
 void MaestroEspecialista::abrirCanalesDeComunicacion() {
+
+    this->listaDePedidos->cerrar();
+    this->pedidosTelefonicosDePan->cerrar();
+    this->pedidosTelefonicosDePizza->cerrar();
+    this->cajasParaEntregar->cerrar();
 
     this->pedidosMasaMadre->setearModo( this->pedidosMasaMadre->LECTURA );
     this->entregasMasaMadre->setearModo( this->entregasMasaMadre->ESCRITURA );

@@ -12,13 +12,8 @@ class MaestroEspecialista : public Trabajador {
 
     private:
 
-        Pipe* pedidosMasaMadre;
-        Pipe* entregasMasaMadre;
-        std::vector <Pipe*> pipes;
-
         std::vector <MasaMadre*> masaMadre;
         int racionesConsumidas = 0;
-        
         
         void crearMasaMadre();
         void alimentarMasaMadre(int numeroDeRacion);
