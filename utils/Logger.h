@@ -12,18 +12,19 @@ using namespace std;
 class Logger {
 
     private:
-		struct flock fl;
-		int fd;
-		std::string nombre;
+	struct flock fl;
+	int fd;
+	std::string nombre;
 
     protected:
 
     public:
         Logger();
         ~Logger();
-		int lockLogger();
-		int unlockLogger();
-		ssize_t writeToLogFile(const char* buffer, const ssize_t buffsize) const;
+	
+	int lockLogger();
+	int unlockLogger();
+	ssize_t writeToLogFile(const char* buffer, const ssize_t buffsize) const;
         void closeFileInThisScope();
 };
 
